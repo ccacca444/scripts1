@@ -1,0 +1,224 @@
+local player = game:GetService("Players").LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "PlayerControlGUI"
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.45, 0, 0.4, 0)
+frame.Position = UDim2.new(0.05, 0, 0.6, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BackgroundTransparency = 0.5
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0.15, 0, 0.15, 0)
+minimizeBtn.Position = UDim2.new(0.85, 0, 0, 0)
+minimizeBtn.Text = "-"
+minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+minimizeBtn.TextSize = 18
+minimizeBtn.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.7, 0, 0.15, 0)
+title.Position = UDim2.new(0.05, 0, 0, 0)
+title.Text = "制作脚本示例(经过修改)"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 18
+title.BackgroundTransparency = 1
+title.Parent = frame
+
+local speedFrame = Instance.new("Frame")
+speedFrame.Size = UDim2.new(1, 0, 0.25, 0)
+speedFrame.Position = UDim2.new(0, 0, 0.2, 0)
+speedFrame.BackgroundTransparency = 1
+speedFrame.Parent = frame
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+speedLabel.Text = "速度: 16"
+speedLabel.TextColor3 = Color3.new(1, 1, 1)
+speedLabel.TextSize = 18
+speedLabel.BackgroundTransparency = 1
+speedLabel.Parent = speedFrame
+
+local increaseSpeedBtn = Instance.new("TextButton")
+increaseSpeedBtn.Size = UDim2.new(0.25, 0, 0.8, 0)
+increaseSpeedBtn.Position = UDim2.new(0.45, 0, 0.1, 0)
+increaseSpeedBtn.Text = "+"
+increaseSpeedBtn.TextColor3 = Color3.new(1, 1, 1)
+increaseSpeedBtn.TextSize = 18
+increaseSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+increaseSpeedBtn.Parent = speedFrame
+
+local decreaseSpeedBtn = Instance.new("TextButton")
+decreaseSpeedBtn.Size = UDim2.new(0.25, 0, 0.8, 0)
+decreaseSpeedBtn.Position = UDim2.new(0.75, 0, 0.1, 0)
+decreaseSpeedBtn.Text = "-"
+decreaseSpeedBtn.TextColor3 = Color3.new(1, 1, 1)
+decreaseSpeedBtn.TextSize = 18
+decreaseSpeedBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+decreaseSpeedBtn.Parent = speedFrame
+
+local jumpFrame = Instance.new("Frame")
+jumpFrame.Size = UDim2.new(1, 0, 0.25, 0)
+jumpFrame.Position = UDim2.new(0, 0, 0.45, 0)
+jumpFrame.BackgroundTransparency = 1
+jumpFrame.Parent = frame
+
+local jumpLabel = Instance.new("TextLabel")
+jumpLabel.Size = UDim2.new(0.4, 0, 1, 0)
+jumpLabel.Text = "跳跃: 7"
+jumpLabel.TextColor3 = Color3.new(1, 1, 1)
+jumpLabel.TextSize = 18
+jumpLabel.BackgroundTransparency = 1
+jumpLabel.Parent = jumpFrame
+
+local increaseJumpBtn = Instance.new("TextButton")
+increaseJumpBtn.Size = UDim2.new(0.25, 0, 0.8, 0)
+increaseJumpBtn.Position = UDim2.new(0.45, 0, 0.1, 0)
+increaseJumpBtn.Text = "+"
+increaseJumpBtn.TextColor3 = Color3.new(1, 1, 1)
+increaseJumpBtn.TextSize = 18
+increaseJumpBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 120)
+increaseJumpBtn.Parent = jumpFrame
+
+local decreaseJumpBtn = Instance.new("TextButton")
+decreaseJumpBtn.Size = UDim2.new(0.25, 0, 0.8, 0)
+decreaseJumpBtn.Position = UDim2.new(0.75, 0, 0.1, 0)
+decreaseJumpBtn.Text = "-"
+decreaseJumpBtn.TextColor3 = Color3.new(1, 1, 1)
+decreaseJumpBtn.TextSize = 18
+decreaseJumpBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 120)
+decreaseJumpBtn.Parent = jumpFrame
+
+local noclipFrame = Instance.new("Frame")
+noclipFrame.Size = UDim2.new(1, 0, 0.2, 0)
+noclipFrame.Position = UDim2.new(0, 0, 0.7, 0)
+noclipFrame.BackgroundTransparency = 1
+noclipFrame.Parent = frame
+
+local noclipBtn = Instance.new("TextButton")
+noclipBtn.Size = UDim2.new(0.8, 0, 0.8, 0)
+noclipBtn.Position = UDim2.new(0.1, 0, 0.1, 0)
+noclipBtn.Text = "穿墙: 关闭"
+noclipBtn.TextColor3 = Color3.new(1, 1, 1)
+noclipBtn.TextSize = 18
+noclipBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+noclipBtn.Parent = noclipFrame
+
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid") or player.CharacterAdded:Wait():WaitForChild("Humanoid")
+local walkSpeed = humanoid.WalkSpeed
+local JumpHeight = humanoid.JumpHeight
+
+local function updateSpeedDisplay()
+    speedLabel.Text = "速度: "..math.floor(walkSpeed)
+end
+
+local function updateJumpDisplay()
+    jumpLabel.Text = "跳跃: "..math.floor(JumpHeight)
+end
+
+increaseSpeedBtn.MouseButton1Click:Connect(function()
+    walkSpeed = math.min(walkSpeed + 5, 100)
+    humanoid.WalkSpeed = walkSpeed
+    updateSpeedDisplay()
+end)
+
+decreaseSpeedBtn.MouseButton1Click:Connect(function()
+    walkSpeed = math.max(walkSpeed - 5, 16)
+    humanoid.WalkSpeed = walkSpeed
+    updateSpeedDisplay()
+end)
+
+increaseJumpBtn.MouseButton1Click:Connect(function()
+    JumpHeight = math.min(JumpHeight + 5, 100)
+    humanoid.JumpHeight = JumpHeight
+    updateJumpDisplay()
+end)
+
+decreaseJumpBtn.MouseButton1Click:Connect(function()
+    JumpHeight = math.max(JumpHeight - 5, 0)
+    humanoid.JumpHeight = JumpHeight
+    updateJumpDisplay()
+end)
+
+local noclip = false
+local noclipConnection
+
+local function noclipLoop()
+    if player.Character then
+        for _, part in ipairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = not noclip
+            end
+        end
+    end
+end
+
+noclipBtn.MouseButton1Click:Connect(function()
+    noclip = not noclip
+    if noclip then
+        noclipBtn.Text = "穿墙: 开启"
+        noclipBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+        noclipConnection = game:GetService("RunService").Stepped:Connect(noclipLoop)
+    else
+        noclipBtn.Text = "穿墙: 关闭"
+        noclipBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+        if noclipConnection then
+            noclipConnection:Disconnect()
+        end
+    end
+end)
+
+local isMinimized = false
+local originalSize = frame.Size
+local minimizedSize = UDim2.new(0.15, 0, 0.15, 0)
+
+minimizeBtn.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        frame.Size = minimizedSize
+        minimizeBtn.Text = "+"
+        speedFrame.Visible = false
+        jumpFrame.Visible = false
+        noclipFrame.Visible = false
+        title.Text = "控制"
+    else
+        frame.Size = originalSize
+        minimizeBtn.Text = "-"
+        speedFrame.Visible = true
+        jumpFrame.Visible = true
+        noclipFrame.Visible = true
+        title.Text = "制作脚本示例(经过修改)"
+    end
+end)
+
+player.CharacterAdded:Connect(function(character)
+    humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = walkSpeed
+    humanoid.JumpHeight = JumpHeight
+    if noclip then
+        noclipLoop()
+    end
+end)
+
+updateSpeedDisplay()
+updateJumpDisplay()
+
+if game:GetService("UserInputService").TouchEnabled then
+    frame.Size = UDim2.new(0.5, 0, 0.45, 0)
+    minimizeBtn.Size = UDim2.new(0.2, 0, 0.2, 0)
+    minimizeBtn.TextSize = 22
+    title.TextSize = 22
+    speedLabel.TextSize = 20
+    jumpLabel.TextSize = 20
+    noclipBtn.TextSize = 20
+    increaseSpeedBtn.TextSize = 20
+    decreaseSpeedBtn.TextSize = 20
+    increaseJumpBtn.TextSize = 20
+    decreaseJumpBtn.TextSize = 20
+end
