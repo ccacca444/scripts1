@@ -926,7 +926,7 @@ end
 -- Add a button for teleporting to the dropped gun
 local ButtonTPGunCreateSuccess, ButtonTPGun = pcall(function()
     return Tab:CreateButton({
-        Name = "Teleport to Dropped Gun",
+        Name = "屎山代码没有任何用",
         Callback = function()
             tpToDroppedGun()
         end
@@ -943,7 +943,7 @@ end
 -- Create Enable ESP button - Only enables if not already enabled
 local ButtonEnableESPCreateSuccess, ButtonEnableESP = pcall(function()
     return Tab:CreateButton({
-        Name = "Enable ESP",
+        Name = "启动 ESP",
         Callback = function()
             if not espEnabled then -- Only enable if it's currently disabled
                 espEnabled = true
@@ -1024,7 +1024,7 @@ end
 -- Create Disable ESP button - Calls the shared disable function
 local ButtonDisableESPCreateSuccess, ButtonDisableESP = pcall(function()
     return Tab:CreateButton({
-        Name = "Disable ESP",
+        Name = "禁用 ESP",
         Callback = function()
             disableEsp() -- Call the shared disable function
         end
