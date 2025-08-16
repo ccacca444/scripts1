@@ -1,19 +1,3 @@
---NU-FWQ
---[[
-    Integrated ESP LocalScript with Rayfield UI, Role Detection, Distance Locking,
-    and Enhanced Hint Matching including AssignedTask check.
-    Fixed issue where players were tagged as hint match when no hints were present.
-    Updated hint parsing to handle AssignedTask directly after "Is often seen ".
-    Corrected hint matching logic to handle hints with only traits or only tasks,
-    and only performs hint matching if the local player is the killer based on the hint text prefix.
-    UPDATED: Modified hint parsing and matching to check AssignedTask or Configuration.Value based on hint type ("Is often seen" presence).
-    Ensured Hint Match tagging is correctly prioritized and applied.
-    FIXED: Ensure "Hints : ", " + ", and "[1] ", "[2] " (including spaces) are removed during parsing.
-    ADDED: More detailed debug prints to specifically track tagging logic in detectRoles, including hint match conditions.
-    ADDED: Automatic hint text check if the local player is the solo killer under the New Highest Priority rule.
-]]
-
--- Load Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create the window
@@ -110,15 +94,15 @@ for name, _ in pairs(vigilanteWeapons) do allRoleWeapons[name] = true end
 
 -- Define Role Colors and Labels
 local killerColor = Color3.fromRGB(255, 0, 0) -- Red
-local killerLabel = "KILLER"
+local killerLabel = "杀手"
 local vigilanteColor = Color3.fromRGB(0, 255, 255) -- Cyan
-local vigilanteLabel = "VIGILANTE"
+local vigilanteLabel = "警官"
 local innocentColor = Color3.fromRGB(0, 255, 0) -- Green
-local innocentLabel = "INNOCENT"
+local innocentLabel = "中立"
 local hintMatchColor = Color3.new(1, 1, 0) -- Yellow
 local hintMatchLabel = "HINT MATCH"
 local vigilanteHintColor = Color3.fromRGB(128, 0, 128) -- Purple -- THIS IS THE PURPLE COLOR
-local vigilanteHintLabel = "VIGILANTE + HINT MATCH" -- THIS IS THE PURPLE LABEL
+local vigilanteHintLabel = "警官 + HINT MATCH" -- THIS IS THE PURPLE LABEL
 
 
 -- Define the distance threshold for the new rule
