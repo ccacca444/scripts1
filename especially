@@ -1,4 +1,6 @@
 --删掉了无用代码的按钮(8.17)
+--增加aimbot标签页(8.17)
+--开源
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -1050,3 +1052,4 @@ end)
 -- End of Script
 
 --免费开源
+--aimbot不是缝合链接是我的仓库
