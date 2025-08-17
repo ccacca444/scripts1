@@ -1,35 +1,43 @@
-local fov = 30
-local maxDistance = 400
-local maxTransparency = 0
-local teamCheck = false
-local wallCheck = true
-local aimPart = "Head"  -- "Torso"
+local Aimbot = {
+    Enabled = false,
+    Settings = {
+        FOV = 30,
+        MaxDistance = 400,
+        MaxTransparency = 0.1,
+        TeamCheck = false,
+        WallCheck = true,
+        AimPart = "Head"
+    },
+    Connections = {},
+    Target = nil,
+    FOVring = nil
+}
 
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local Cam = game.Workspace.CurrentCamera
-
-local FOVring = Drawing.new("Circle")
-FOVring.Visible = true
-FOVring.Thickness = 2
-FOVring.Color = Color3.fromRGB(128, 0, 128)
-FOVring.Filled = false
-FOVring.Radius = fov
-FOVring.Position = Cam.ViewportSize / 2
-FOVring.ZIndex = 999
+local function initDrawings()
+    Aimbot.FOVring = Drawing.new("Circle")
+    Aimbot.FOVring.Visible = true
+    Aimbot.FOVring.Thickness = 2
+    Aimbot.FOVring.Color = Color3.fromRGB(128, 0, 128)
+    Aimbot.FOVring.Filled = false
+    Aimbot.FOVring.Radius = Aimbot.Settings.FOV
+    Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+end
 
 local function updateDrawings()
-    FOVring.Position = Cam.ViewportSize / 2
+    if Aimbot.FOVring then
+        Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+    end
 end
 
 local function lookAt(target)
-    local lookVector = (target - Cam.CFrame.Position).unit
-    local newCFrame = CFrame.new(Cam.CFrame.Position, Cam.CFrame.Position + lookVector)
-    Cam.CFrame = newCFrame
+    if not Aimbot.Enabled then return end
+    local lookVector = (target - workspace.CurrentCamera.CFrame.Position).unit
+    local newCFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, workspace.CurrentCamera.CFrame.Position + lookVector)
+    workspace.CurrentCamera.CFrame = newCFrame
 end
 
 local function calculateTransparency(distance)
-    return (1 - (distance / fov)) * maxTransparency
+    return (1 - (distance / Aimbot.Settings.FOV)) * Aimbot.Settings.MaxTransparency
 end
 
 local function isPlayerAlive(player)
@@ -38,11 +46,11 @@ local function isPlayerAlive(player)
 end
 
 local function isPlayerVisibleThroughWalls(player, trg_part)
-    if not wallCheck then
+    if not Aimbot.Settings.WallCheck then
         return true
     end
 
-    local localPlayerCharacter = Players.LocalPlayer.Character
+    local localPlayerCharacter = game:GetService("Players").LocalPlayer.Character
     if not localPlayerCharacter then
         return false
     end
@@ -52,16 +60,15 @@ local function isPlayerVisibleThroughWalls(player, trg_part)
         return false
     end
 
-    local ray = Ray.new(Cam.CFrame.Position, part.Position - Cam.CFrame.Position)
+    local ray = Ray.new(workspace.CurrentCamera.CFrame.Position, part.Position - workspace.CurrentCamera.CFrame.Position)
     local hit, _ = workspace:FindPartOnRayWithIgnoreList(ray, {localPlayerCharacter})
 
     if hit and hit:IsDescendantOf(player.Character) then
         return true
     end
 
-    -- Fallback to a nearby position if the direct ray doesn't hit
-    local direction = (part.Position - Cam.CFrame.Position).unit
-    local nearRay = Ray.new(Cam.CFrame.Position + direction * 2, direction * maxDistance)
+    local direction = (part.Position - workspace.CurrentCamera.CFrame.Position).unit
+    local nearRay = Ray.new(workspace.CurrentCamera.CFrame.Position + direction * 2, direction * Aimbot.Settings.MaxDistance)
     local nearHit, _ = workspace:FindPartOnRayWithIgnoreList(nearRay, {localPlayerCharacter})
 
     return nearHit and nearHit:IsDescendantOf(player.Character)
@@ -70,18 +77,18 @@ end
 local function getClosestPlayerInFOV()
     local nearest = nil
     local last = math.huge
-    local playerMousePos = Cam.ViewportSize / 2
-    local localPlayer = Players.LocalPlayer
+    local playerMousePos = workspace.CurrentCamera.ViewportSize / 2
+    local localPlayer = game:GetService("Players").LocalPlayer
 
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= localPlayer and (not teamCheck or player.Team ~= localPlayer.Team) and isPlayerAlive(player) then
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        if player ~= localPlayer and (not Aimbot.Settings.TeamCheck or player.Team ~= localPlayer.Team) and isPlayerAlive(player) then
             local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-            local part = player.Character and player.Character:FindFirstChild(aimPart)
+            local part = player.Character and player.Character:FindFirstChild(Aimbot.Settings.AimPart)
             if humanoid and part then
-                local ePos, isVisible = Cam:WorldToViewportPoint(part.Position)
+                local ePos, isVisible = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
                 local distance = (Vector2.new(ePos.x, ePos.y) - playerMousePos).Magnitude
 
-                if distance < last and isVisible and distance < fov and distance < maxDistance and isPlayerVisibleThroughWalls(player, aimPart) then
+                if distance < last and isVisible and distance < Aimbot.Settings.FOV and distance < Aimbot.Settings.MaxDistance and isPlayerVisibleThroughWalls(player, Aimbot.Settings.AimPart) then
                     last = distance
                     nearest = player
                 end
@@ -92,19 +99,63 @@ local function getClosestPlayerInFOV()
     return nearest
 end
 
-RunService.RenderStepped:Connect(function()
+local function mainLoop()
+    if not Aimbot.Enabled then return end
+    
     updateDrawings()
-    local closest = getClosestPlayerInFOV()
-    if closest and closest.Character:FindFirstChild(aimPart) then
-        lookAt(closest.Character[aimPart].Position)
+    Aimbot.Target = getClosestPlayerInFOV()
+
+if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
+        lookAt(Aimbot.Target.Character[Aimbot.Settings.AimPart].Position)
+        
+        local part = Aimbot.Target.Character[Aimbot.Settings.AimPart]
+        local ePos = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
+        local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
+        Aimbot.FOVring.Transparency = calculateTransparency(distance)
+    else
+        Aimbot.FOVring.Transparency = Aimbot.Settings.MaxTransparency
+    end
+end
+
+function Aimbot:Init()
+    if self.Enabled then return end
+    
+    initDrawings()
+    
+    table.insert(self.Connections, game:GetService("RunService").RenderStepped:Connect(mainLoop))
+    
+    self.Enabled = true
+    print("Aimbot已启用")
+end
+
+function Aimbot:Disable()
+    if not self.Enabled then return end
+    
+    for _, conn in ipairs(self.Connections) do
+        conn:Disconnect()
+    end
+    self.Connections = {}
+    
+    if self.FOVring then
+        self.FOVring:Remove()
+        self.FOVring = nil
     end
     
-    if closest then
-        local part = closest.Character[aimPart]
-        local ePos, isVisible = Cam:WorldToViewportPoint(part.Position)
-        local distance = (Vector2.new(ePos.x, ePos.y) - (Cam.ViewportSize / 2)).Magnitude
-        FOVring.Transparency = calculateTransparency(distance)
-    else
-        FOVring.Transparency = maxTransparency
+    self.Enabled = false
+    self.Target = nil
+    print("Aimbot已禁用")
+end
+
+function Aimbot:Configure(settings)
+    for k, v in pairs(settings) do
+        if self.Settings[k] ~= nil then
+            self.Settings[k] = v
+        end
     end
-end)
+    
+    if self.FOVring then
+        self.FOVring.Radius = self.Settings.FOV
+    end
+end
+
+return Aimbot
