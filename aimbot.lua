@@ -1,6 +1,6 @@
 local fov = 30
 local maxDistance = 400
-local maxTransparency = 0.1
+local maxTransparency = 0
 local teamCheck = false
 local wallCheck = true
 local aimPart = "Head"  -- "Torso"
@@ -16,6 +16,7 @@ FOVring.Color = Color3.fromRGB(128, 0, 128)
 FOVring.Filled = false
 FOVring.Radius = fov
 FOVring.Position = Cam.ViewportSize / 2
+FOVring.ZIndex = 999
 
 local function updateDrawings()
     FOVring.Position = Cam.ViewportSize / 2
