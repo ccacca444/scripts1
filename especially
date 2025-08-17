@@ -1,5 +1,8 @@
---删掉了无用代码的按钮(8.17)
---沒有api自己放到script
+--乱搞的。脚本，有bug。谨慎使用。
+--删掉了无用代码的按钮 8.17
+--添加aimbot 8.17
+--添加关闭aimbot 8.18 
+--添加函数并使用ai优化 8.18
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -1037,12 +1040,67 @@ Rayfield:Notify({
 
 local Tab = Window:CreateTab("Aimbot", "rewind")
 
+local aimbotScript = nil
+local aimbotEnabled = false
+
+local function disableAimbot()
+    if aimbotEnabled then
+       
+        if aimbotScript and aimbotScript.Disable then
+            aimbotScript:Disable()
+        end
+        
+        
+        aimbotEnabled = false
+        
+        
+        if fovCircle then
+            fovCircle:Destroy()
+            fovCircle = nil
+        end
+        
+        if targetHighlight then
+            targetHighlight:Destroy()
+            targetHighlight = nil
+        end
+        
+        print("Aimbot已禁用")
+        Rayfield:Notify({
+            Title = "Aimbot 禁用",
+            Content = "aimbot 禁用",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+end
+
+
 local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
+            
+            disableAimbot()
+            
+            
+            aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
+            
+            
+            if aimbotScript and aimbotScript.Init then
+                aimbotScript:Init()
+            end
+            
+            aimbotEnabled = true
+            print("Aimbot已加载")
         end
+    })
+end)
+
+
+local ButtonDisableAimbotSuccess, ButtonDisableAimbot = pcall(function()
+    return Tab:CreateButton({
+        Name = "停止aimbot",  
+        Callback = disableAimbot  
     })
 end)
 
