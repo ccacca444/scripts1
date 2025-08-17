@@ -1,4 +1,5 @@
 --删掉了无用代码的按钮(8.17)
+--沒有api自己放到script
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
