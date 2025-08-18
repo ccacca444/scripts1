@@ -10,7 +10,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = " 血债 byCCA ",
     Icon = 0,
-    LoadingTitle = "血债血偿!",
+    LoadingTitle = "血债血偿",
     LoadingSubtitle = "by cca",
     Theme = "Default",
     DisableRayfieldPrompts = false,
@@ -1038,7 +1038,8 @@ Rayfield:Notify({
     Image = 4483362458 -- Replace with a suitable asset ID
 })
 
-local Tab = Window:CreateTab("Aimbot", "rewind")
+local Tab =
+Window:CreateTab("Aimbot","rewind")
 
 local aimbotScript = nil
 local aimbotEnabled = false
