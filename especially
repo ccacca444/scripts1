@@ -1064,7 +1064,7 @@ local function disableAimbot()
             targetHighlight = nil
         end
         
-        print("Aimbot已禁用")
+        print("Aimbot已反馈")
         Rayfield:Notify({
             Title = "Aimbot 禁用",
             Content = "aimbot 禁用",
@@ -1095,7 +1095,7 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
         end
     })
 end)
-
+--bug print
 
 local ButtonDisableAimbotSuccess, ButtonDisableAimbot = pcall(function()
     return Tab:CreateButton({
