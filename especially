@@ -1038,8 +1038,7 @@ Rayfield:Notify({
     Image = 4483362458 -- Replace with a suitable asset ID
 })
 
-local Tab =
-Window:CreateTab("Aimbot","rewind")
+local Tab = Window:CreateTab("Aimbot", "rbxassetid://4458901886")
 
 local aimbotScript = nil
 local aimbotEnabled = false
