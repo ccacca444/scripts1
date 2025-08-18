@@ -1064,7 +1064,7 @@ local function disableAimbot()
             targetHighlight = nil
         end
         
-        print("Aimbot已反馈")
+        print("Aimbot己禁用")
         Rayfield:Notify({
             Title = "Aimbot 禁用",
             Content = "aimbot 禁用",
