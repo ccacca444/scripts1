@@ -8,7 +8,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create the window
 local Window = Rayfield:CreateWindow({
-    Name = "Blood Debt Role Detector",
+    Name = " 血债 byCCA ",
     Icon = 0,
     LoadingTitle = "Rayfield Role Detector",
     LoadingSubtitle = "by Sirius",
@@ -105,9 +105,9 @@ local vigilanteLabel = "警官"
 local innocentColor = Color3.fromRGB(0, 255, 0) -- Green
 local innocentLabel = "中立"
 local hintMatchColor = Color3.new(1, 1, 0) -- Yellow
-local hintMatchLabel = "HINT MATCH"
+local hintMatchLabel = "目标"
 local vigilanteHintColor = Color3.fromRGB(128, 0, 128) -- Purple -- THIS IS THE PURPLE COLOR
-local vigilanteHintLabel = "警官 + HINT MATCH" -- THIS IS THE PURPLE LABEL
+local vigilanteHintLabel = "警官 + 目标" -- THIS IS THE PURPLE LABEL
 
 
 -- Define the distance threshold for the new rule
