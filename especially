@@ -1039,7 +1039,7 @@ Rayfield:Notify({
 })
 
 local Tab =
-Window:CreateTab("Aimbot","rbxassetid://4458901886")
+Window:CreateTab("Aimbot","rewind")
 
 local aimbotScript = nil
 local aimbotEnabled = false
