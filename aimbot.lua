@@ -1,3 +1,5 @@
+--这里是分支直接运行只会出现aimbot
+
 local Aimbot = {
     Enabled = false,
     Settings = {
