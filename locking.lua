@@ -1,3 +1,5 @@
+--把锁定头部右侧改为中间
+
 local ShiftlockStarterGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 ShiftlockStarterGui.Name = "Shiftlock (StarterGui)"
