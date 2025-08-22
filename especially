@@ -1108,7 +1108,7 @@ end)
 
 local Tab = Window:CreateTab("关于", "rewind")
 
-local idk = ccaTab:CreateButton({
+local Button = Tab:CreateButton({
     Name = "作者QQ1516721807",
     Callback = function()
         print("什么都没发生")
