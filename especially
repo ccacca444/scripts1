@@ -21,6 +21,26 @@ local Window = Rayfield:CreateWindow({
 -- Create the tab
 local Tab = Window:CreateTab("Players", "rewind")
 
+local Button = Tab:CreateButton({
+    Name = "视角锁定",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
+        Rayfield:Notify({
+            Title = "视角锁定",
+            Content = "已加载",
+            Duration = 3,
+            Image = 4483362458,
+            Actions = {
+                Ignore = {
+                    Name = "Button",
+                    Callback = function()
+                    end
+                },
+            },
+        })
+    end,
+})
+
 -- Weapon lists (UPDATED AS PROVIDED in the larger script)
 local killerWeapons = {
     ["CharcoalSteel JS-22"] = true,
