@@ -22,7 +22,7 @@ local Window = Rayfield:CreateWindow({
 local Tab = Window:CreateTab("Players", "rewind")
 
 local Button = Tab:CreateButton({
-    Name = "视角锁定",
+    Name = "视角锁定(请勿点击多次)",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
         Rayfield:Notify({
@@ -1054,7 +1054,7 @@ Rayfield:Notify({
     Image = 4483362458 -- Replace with a suitable asset ID
 })
 
---这里真的报错个没完没了
+--最他妈烂的函数导致它提示不了改一步错一步
 
 local Tab = Window:CreateTab("Aimbot", "rewind")
 
