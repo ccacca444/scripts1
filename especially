@@ -1112,14 +1112,9 @@ local Button = Tab:CreateButton({
     Name = "作者QQ1516721807",
     Callback = function()
         print("什么都没发生")
-        Rayfield:Notify({
-            Title = "by thecca",
-            Content = "倒卖死妈",
-            Duration = 3,
-            Image = 4483362458
-        })
-    end
+     end
 })
+
 
 -- The Z Key Bind Functionality from the original large script was removed as it was commented out.
 
