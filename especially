@@ -1115,6 +1115,19 @@ local Button = Tab:CreateButton({
      end
 })
 
+local Button = Tab:CreateButton({
+    Name = "禁止倒卖 倒卖死妈 警惕各种圈钱诈骗",
+    Callback = function()
+        print("什么都没发生")
+     end
+})
+
+local Button = Tab:CreateButton({
+    Name = "Q群313142982",
+    Callback = function()
+        print("什么都没发生")
+     end
+})
 
 -- The Z Key Bind Functionality from the original large script was removed as it was commented out.
 
