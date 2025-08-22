@@ -1,12 +1,8 @@
---乱搞的。脚本，有bug。谨慎使用。
---删掉了无用代码的按钮 8.17
---添加aimbot 8.17
---添加关闭aimbot 8.18 
---添加函数并使用ai优化 8.18
+--所有更新请移到提交
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create the window
+-- 操你妈
 local Window = Rayfield:CreateWindow({
     Name = " 血债 byCCA ",
     Icon = 0,
@@ -1129,7 +1125,7 @@ local Button = Tab:CreateButton({
      end
 })
 
--- The Z Key Bind Functionality from the original large script was removed as it was commented out.
+-- The CCA
 
 -- End of Script
 
