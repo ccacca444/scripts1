@@ -1142,7 +1142,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "8.24更新了jts255持有杀手透视(应该有用),
+    Name = "8.24更新了jts255持有杀手透视(应该有用)",
     Callback = function()
         print("什么都没发生")
      end
