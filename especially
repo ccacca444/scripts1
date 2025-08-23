@@ -40,8 +40,7 @@ local Button = Tab:CreateButton({
         })
     end,
 })
-
--- Weapon lists (UPDATED AS PROVIDED in the larger script)
+--杀手
 local killerWeapons = {
     ["CharcoalSteel JS-22"] = true,
     ["Pretty Pink RR-LCP"] = true,
@@ -82,7 +81,7 @@ local killerWeapons = {
     ["THUMPA"] = true,
     ["LUT-E 'KRUS'"] = true
 }
-
+--警长
 local vigilanteWeapons = {
     ["Beagle"] = true,
     ["IZVEKH-412"] = true,
