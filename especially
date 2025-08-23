@@ -1125,7 +1125,8 @@ local ButtonDisableAimbotSuccess, ButtonDisableAimbot = pcall(function()
     })
 end)
 
-local Tab = Window:CreateTab("关于与更新", "rewind")
+local Tab = Window:CreateTab("关于与更新",
+"rewind")
 
 local Button = Tab:CreateButton({
     Name = "作者QQ1516721807",
@@ -1142,7 +1143,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "8.24更新了jts255持有杀手透视(应该有用)",
+    Name = "更新了jts255持有杀手透视(应该有用)",
     Callback = function()
         print("什么都没发生")
      end
@@ -1154,7 +1155,6 @@ local Button = Tab:CreateButton({
         print("什么都没发生")
      end
 })
-
 
 
 -- The CCA
