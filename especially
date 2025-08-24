@@ -93,6 +93,9 @@ local vigilanteWeapons = {
     ["SilverSteel RR-Snubby"] = true,
     ["RR-Snubby"] = true,
     ["ZKZ-Obrez"] = true,
+    ["Buxxberg-COMPACT"] = true,
+    ["pretty pink Buxxberg-COMPACT"] = true,
+    ["JS-5A Obrez"] = true,
     ["GG-17"] = true,
     ["J9-M"] = true,
     ["J9-Meretta"] = true, -- Typo? Should this be J9-Mereta? Keeping as is from 
@@ -1145,7 +1148,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "更新双倍精英持有者透视(警长)",
+    Name = "更新了三把警长枪的透视(buxx,JS5a,Dual)",
     Callback = function()
         print("什么都没发生")
      end
