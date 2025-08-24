@@ -43,6 +43,7 @@ local Button = Tab:CreateButton({
 --杀手
 local killerWeapons = {
     ["CharcoalSteel JS-22"] = true,
+    ["Hammer n Bullet"] = true,
     ["Pretty Pink RR-LCP"] = true,
     ["JS2-BondsDerringy"] = true,
     ["JTS-225"] = true,
