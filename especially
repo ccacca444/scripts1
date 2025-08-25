@@ -93,6 +93,7 @@ local vigilanteWeapons = {
     ["SilverSteel RR-Snubby"] = true,
     ["RR-Snubby"] = true,
     ["ZKZ-Obrez"] = true,
+    ["Clothed ZKZ-Obrez"] = true,
     ["Buxxberg-COMPACT"] = true,
     ["pretty pink Buxxberg-COMPACT"] = true,
     ["JS-5A-OBREZ"] = true,
