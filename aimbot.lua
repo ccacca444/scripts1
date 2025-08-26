@@ -28,6 +28,7 @@ local function initDrawings()
     local numSegments = 42 
     
     for i = 1, numSegments do
+        local overlap = 0.1 
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
         local angle2 = i * (2 * math.pi / numSegments)
         
@@ -59,6 +60,7 @@ local function updateDrawings()
     local numSegments = #Aimbot.FOVSegments
     
     for i = 1, numSegments do
+        local overlap = 0.1 
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
         local angle2 = i * (2 * math.pi / numSegments)
         
