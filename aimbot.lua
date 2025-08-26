@@ -25,7 +25,7 @@ local function initDrawings()
     
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
-    local numSegments = 36 
+    local numSegments = 42 
     
     for i = 1, numSegments do
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
