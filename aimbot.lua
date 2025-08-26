@@ -3,7 +3,7 @@ local Aimbot = {
     Settings = {
         FOV = 30,
         MaxDistance = 400,
-        MaxTransparency = 0.1,
+        MaxTransparency = 1,
         TeamCheck = false,
         WallCheck = true,
         AimPart = "Head"
@@ -43,7 +43,7 @@ local function initDrawings()
         
         local line = Drawing.new("Line")
         line.Visible = true
-        line.Thickness = 2
+        line.Thickness = 5
         line.Color = Color3.fromRGB(128, 0, 128)
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
