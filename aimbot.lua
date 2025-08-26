@@ -10,11 +10,11 @@ local Aimbot = {
     },
     Connections = {},
     Target = nil,
-    FOVSegments = {} -- 存储所有线段对象
+    FOVSegments = {} 
 }
 
 local function initDrawings()
-    -- 清除现有的线段
+    
     for _, segment in ipairs(Aimbot.FOVSegments) do
         if segment then
             segment:Remove()
@@ -22,10 +22,10 @@ local function initDrawings()
     end
     Aimbot.FOVSegments = {}
     
-    -- 创建线段来形成FOV圆圈
+    
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
-    local numSegments = 36 -- 线段数量，越多越圆滑
+    local numSegments = 36 
     
     for i = 1, numSegments do
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
@@ -44,7 +44,7 @@ local function initDrawings()
         local line = Drawing.new("Line")
         line.Visible = true
         line.Thickness = 5
-        line.Color = Color3.fromRGB(128, 0, 128)
+        line.Color = Color3.fromRGB(255, 0, 0)
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
         line.To = endPos
@@ -163,12 +163,12 @@ local function mainLoop()
         local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
         local transparency = calculateTransparency(distance)
         
-        -- 更新所有线段的透明度
+        
         for _, segment in ipairs(Aimbot.FOVSegments) do
             segment.Transparency = transparency
         end
     else
-        -- 重置所有线段的透明度
+        
         for _, segment in ipairs(Aimbot.FOVSegments) do
             segment.Transparency = Aimbot.Settings.MaxTransparency
         end
@@ -194,7 +194,7 @@ function Aimbot:Disable()
     end
     self.Connections = {}
     
-    -- 移除所有线段
+    
     for _, segment in ipairs(self.FOVSegments) do
         if segment then
             segment:Remove()
@@ -214,7 +214,7 @@ function Aimbot:Configure(settings)
         end
     end
     
-    -- 重新初始化绘图以应用新的FOV设置
+    
     if self.Enabled then
         initDrawings()
     end
