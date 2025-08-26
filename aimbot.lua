@@ -26,9 +26,8 @@ local function initDrawings()
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
     local numSegments = 80 
-    
+    local overlap = 0.1
     for i = 1, numSegments do
-        local overlap = 0.1 
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
         local angle2 = i * (2 * math.pi / numSegments)
         
@@ -58,9 +57,8 @@ local function updateDrawings()
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
     local numSegments = #Aimbot.FOVSegments
-    
+    local overlap = 0.1
     for i = 1, numSegments do
-        local overlap = 0.1 
         local angle1 = (i - 1) * (2 * math.pi / numSegments)
         local angle2 = i * (2 * math.pi / numSegments)
         
