@@ -1,5 +1,3 @@
---这里是分支直接运行只会出现aimbot
-
 local Aimbot = {
     Enabled = false,
     Settings = {
@@ -16,25 +14,31 @@ local Aimbot = {
 }
 
 local function initDrawings()
+    -- 检查Drawing库是否可用
+    if not Drawing then
+        warn("Drawing库不可用，FOV圆圈将无法显示")
+        return
+    end
+    
     Aimbot.FOVring = Drawing.new("Circle")
-    Aimbot.FOVring.Visible = true
+    Aimbot.FOVring.Visible = Aimbot.Enabled
     Aimbot.FOVring.Thickness = 2
-    Aimbot.FOVring.Color = Color3.fromRGB(128, 0, 128)
+    Aimbot.FOVring.Color = Color3.fromRGB(255, 0, 0)  -- 改为红色更明显
     Aimbot.FOVring.Filled = false
     Aimbot.FOVring.Radius = Aimbot.Settings.FOV
     Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
-    Aimbot.FOVring.Transparency = 1  -- 初始设置为完全不透明
+    Aimbot.FOVring.Transparency = 0.5  -- 设置为半透明
+    Aimbot.FOVring.ZIndex = 999  -- 确保在最前面
 end
 
 local function updateDrawings()
     if Aimbot.FOVring then
-        Aimbot.FOVring.Visible = Aimbot.Enabled  
+        Aimbot.FOVring.Visible = Aimbot.Enabled
         Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
-        Aimbot.FOVring.Radius = Aimbot.Settings.FOV  
+        Aimbot.FOVring.Radius = Aimbot.Settings.FOV
     end
 end
 
--- 添加缺失的 lookAt 函数
 local function lookAt(target)
     if not Aimbot.Enabled then return end
     local lookVector = (target - workspace.CurrentCamera.CFrame.Position).unit
@@ -123,10 +127,13 @@ local function mainLoop()
         local part = Aimbot.Target.Character[Aimbot.Settings.AimPart]
         local ePos = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
         local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
-        Aimbot.FOVring.Transparency = calculateTransparency(distance)
+        if Aimbot.FOVring then
+            Aimbot.FOVring.Transparency = calculateTransparency(distance)
+        end
     else
-        -- 没有目标时设置为完全不透明而不是MaxTransparency
-        Aimbot.FOVring.Transparency = 1
+        if Aimbot.FOVring then
+            Aimbot.FOVring.Transparency = 0.5  -- 没有目标时保持半透明
+        end
     end
 end
 
@@ -139,6 +146,9 @@ function Aimbot:Init()
     
     self.Enabled = true
     print("Aimbot已启用")
+    
+    -- 立即更新一次绘图
+    updateDrawings()
 end
 
 function Aimbot:Disable()
