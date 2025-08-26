@@ -28,8 +28,8 @@ local function initDrawings()
     local numSegments = 80 
     local overlap = 0.1
     for i = 1, numSegments do
-        local angle1 = (i - 1) * (2 * math.pi / numSegments)
-        local angle2 = i * (2 * math.pi / numSegments)
+        local angle1 = (i - 1) * (2 * math.pi / numSegments) - overlap
+        local angle2 = i * (2 * math.pi / numSegments) + overlap
         
         local startPos = Vector2.new(
             center.X + radius * math.cos(angle1),
@@ -59,8 +59,8 @@ local function updateDrawings()
     local numSegments = #Aimbot.FOVSegments
     local overlap = 0.1
     for i = 1, numSegments do
-        local angle1 = (i - 1) * (2 * math.pi / numSegments)
-        local angle2 = i * (2 * math.pi / numSegments)
+        local angle1 = (i - 1) * (2 * math.pi / numSegments) - overlap
+        local angle2 = i * (2 * math.pi / numSegments) + overlap
         
         local startPos = Vector2.new(
             center.X + radius * math.cos(angle1),
