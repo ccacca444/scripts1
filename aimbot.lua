@@ -43,7 +43,7 @@ local function initDrawings()
         
         local line = Drawing.new("Line")
         line.Visible = true
-        line.Thickness = 10
+        line.Thickness = 15
         line.Color = Color3.fromRGB(255, 0, 0)
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
