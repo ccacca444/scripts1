@@ -1,8 +1,8 @@
--- 使用完全闭合FOV圆圈的Aimbot脚本
+-- 修复FOV圆圈显示问题的Aimbot脚本
 local Aimbot = {
     Enabled = false,
     Settings = {
-        FOV = 30,
+        FOV = 100,  -- 增大FOV值使其更明显
         MaxDistance = 400,
         MaxTransparency = 0.1,
         TeamCheck = false,
@@ -17,25 +17,38 @@ local Aimbot = {
 
 local function createFOVCircle()
     local player = game.Players.LocalPlayer
-    local camera = workspace.CurrentCamera
+    if not player then return end
+    
+    -- 等待PlayerGui加载
+    if not player:FindFirstChild("PlayerGui") then
+        player:WaitForChild("PlayerGui")
+    end
+    
+    -- 移除旧的FOVGui（如果存在）
+    if Aimbot.FOVGui then
+        Aimbot.FOVGui:Destroy()
+    end
     
     -- 创建FOV圆圈容器
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "AimbotFOV"
     screenGui.Parent = player.PlayerGui
     screenGui.ResetOnSpawn = false
-    screenGui.Enabled = Aimbot.Enabled
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.DisplayOrder = 999  -- 确保在最前面
+    screenGui.Enabled = true  -- 始终启用，通过子元素控制可见性
     
     -- 创建圆形Frame
     local circle = Instance.new("Frame")
     circle.Name = "FOVCircle"
     circle.Size = UDim2.new(0, Aimbot.Settings.FOV * 2, 0, Aimbot.Settings.FOV * 2)
-    circle.Position = UDim2.new(0.5, -Aimbot.Settings.FOV, 0.5, -Aimbot.Settings.FOV) -- 屏幕中央
+    circle.Position = UDim2.new(0.5, -Aimbot.Settings.FOV, 0.5, -Aimbot.Settings.FOV)
     circle.AnchorPoint = Vector2.new(0.5, 0.5)
-    circle.BackgroundTransparency = 1  -- 完全透明背景
+    circle.BackgroundTransparency = 1  -- 透明背景
     circle.BorderSizePixel = 2         -- 边框粗细
     circle.BorderColor3 = Color3.fromRGB(255, 0, 0)  -- 红色边框
-    circle.Visible = Aimbot.Enabled
+    circle.Visible = Aimbot.Enabled    -- 根据启用状态控制可见性
+    circle.ZIndex = 999
     circle.Parent = screenGui
     
     -- 使用UICorner创建圆形
@@ -45,26 +58,33 @@ local function createFOVCircle()
     
     Aimbot.FOVGui = screenGui
     Aimbot.FOVCircle = circle
+    
+    print("FOV圆圈创建成功，大小:", Aimbot.Settings.FOV * 2)
     return screenGui
 end
 
 local function updateFOVCircle()
-    if not Aimbot.FOVGui or not Aimbot.FOVGui.Parent then
+    if not Aimbot.Enabled then
+        if Aimbot.FOVCircle then
+            Aimbot.FOVCircle.Visible = false
+        end
+        return
+    end
+    
+    -- 确保FOV圆圈存在
+    if not Aimbot.FOVGui or not Aimbot.FOVGui.Parent or not Aimbot.FOVCircle then
         createFOVCircle()
         return
     end
     
-    if not Aimbot.FOVCircle then
-        return
-    end
+    -- 更新可见性
+    Aimbot.FOVCircle.Visible = true
     
-    Aimbot.FOVGui.Enabled = Aimbot.Enabled
-    Aimbot.FOVCircle.Visible = Aimbot.Enabled
-    
-    -- 更新圆圈大小（保持屏幕中央）
+    -- 更新圆圈大小和位置
     local diameter = Aimbot.Settings.FOV * 2
     Aimbot.FOVCircle.Size = UDim2.new(0, diameter, 0, diameter)
     Aimbot.FOVCircle.Position = UDim2.new(0.5, -Aimbot.Settings.FOV, 0.5, -Aimbot.Settings.FOV)
+    Aimbot.FOVCircle.BorderColor3 = Color3.fromRGB(255, 0, 0)
 end
 
 local function cleanupFOV()
@@ -146,35 +166,35 @@ local function getClosestPlayerInFOV()
     return nearest
 end
 
-local function updateFOVColor(transparency)
-    if Aimbot.FOVCircle then
-        Aimbot.FOVCircle.BorderColor3 = Color3.fromRGB(255, 0, 0)
+local function updateFOVAppearance(hasTarget)
+    if not Aimbot.FOVCircle then return end
+    
+    if hasTarget then
+        -- 有目标时改变外观
+        Aimbot.FOVCircle.BorderColor3 = Color3.fromRGB(0, 255, 0)  -- 绿色
+        Aimbot.FOVCircle.BorderSizePixel = 3
+    else
+        -- 无目标时恢复原样
+        Aimbot.FOVCircle.BorderColor3 = Color3.fromRGB(255, 0, 0)  -- 红色
         Aimbot.FOVCircle.BorderSizePixel = 2
     end
 end
 
 local function mainLoop()
-    if not Aimbot.Enabled then 
-        if Aimbot.FOVGui then
-            Aimbot.FOVGui.Enabled = false
-        end
-        return 
-    end
-    
     -- 更新FOV圆圈
     updateFOVCircle()
+    
+    if not Aimbot.Enabled then 
+        return 
+    end
     
     Aimbot.Target = getClosestPlayerInFOV()
 
     if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
         lookAt(Aimbot.Target.Character[Aimbot.Settings.AimPart].Position)
-        
-        local part = Aimbot.Target.Character[Aimbot.Settings.AimPart]
-        local ePos = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
-        local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
-        updateFOVColor(calculateTransparency(distance))
+        updateFOVAppearance(true)
     else
-        updateFOVColor(Aimbot.Settings.MaxTransparency)
+        updateFOVAppearance(false)
     end
 end
 
@@ -184,15 +204,17 @@ function Aimbot:Init()
     -- 创建FOV圆圈
     createFOVCircle()
     
+    -- 创建主循环
     table.insert(self.Connections, game:GetService("RunService").RenderStepped:Connect(mainLoop))
     
     self.Enabled = true
-    print("Aimbot已启用")
+    print("Aimbot已启用 - FOV大小:", self.Settings.FOV)
 end
 
 function Aimbot:Disable()
     if not self.Enabled then return end
     
+    -- 断开所有连接
     for _, conn in ipairs(self.Connections) do
         conn:Disconnect()
     end
@@ -216,6 +238,26 @@ function Aimbot:Configure(settings)
     -- 更新FOV大小
     if self.FOVCircle then
         updateFOVCircle()
+    end
+end
+
+-- 添加调试功能
+function Aimbot:DebugFOV()
+    print("FOV调试信息:")
+    print("- 启用状态:", self.Enabled)
+    print("- FOV大小:", self.Settings.FOV)
+    print("- FOVGui存在:", self.FOVGui ~= nil)
+    print("- FOVCircle存在:", self.FOVCircle ~= nil)
+    
+    if self.FOVGui then
+        print("- FOVGui父级:", self.FOVGui.Parent and self.FOVGui.Parent.Name or "无")
+        print("- FOVGui启用:", self.FOVGui.Enabled)
+    end
+    
+    if self.FOVCircle then
+        print("- FOVCircle可见:", self.FOVCircle.Visible)
+        print("- FOVCircle大小:", self.FOVCircle.Size)
+        print("- FOVCircle位置:", self.FOVCircle.Position)
     end
 end
 
