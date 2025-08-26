@@ -1,5 +1,3 @@
---这里是分支直接运行只会出现aimbot
-
 local Aimbot = {
     Enabled = false,
     Settings = {
@@ -12,22 +10,72 @@ local Aimbot = {
     },
     Connections = {},
     Target = nil,
-    FOVring = nil
+    FOVSegments = {} -- 存储所有线段对象
 }
 
 local function initDrawings()
-    Aimbot.FOVring = Drawing.new("Circle")
-    Aimbot.FOVring.Visible = true
-    Aimbot.FOVring.Thickness = 2
-    Aimbot.FOVring.Color = Color3.fromRGB(128, 0, 128)
-    Aimbot.FOVring.Filled = false
-    Aimbot.FOVring.Radius = Aimbot.Settings.FOV
-    Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+    -- 清除现有的线段
+    for _, segment in ipairs(Aimbot.FOVSegments) do
+        if segment then
+            segment:Remove()
+        end
+    end
+    Aimbot.FOVSegments = {}
+    
+    -- 创建线段来形成FOV圆圈
+    local center = workspace.CurrentCamera.ViewportSize / 2
+    local radius = Aimbot.Settings.FOV
+    local numSegments = 36 -- 线段数量，越多越圆滑
+    
+    for i = 1, numSegments do
+        local angle1 = (i - 1) * (2 * math.pi / numSegments)
+        local angle2 = i * (2 * math.pi / numSegments)
+        
+        local startPos = Vector2.new(
+            center.X + radius * math.cos(angle1),
+            center.Y + radius * math.sin(angle1)
+        )
+        
+        local endPos = Vector2.new(
+            center.X + radius * math.cos(angle2),
+            center.Y + radius * math.sin(angle2)
+        )
+        
+        local line = Drawing.new("Line")
+        line.Visible = true
+        line.Thickness = 2
+        line.Color = Color3.fromRGB(128, 0, 128)
+        line.Transparency = Aimbot.Settings.MaxTransparency
+        line.From = startPos
+        line.To = endPos
+        
+        table.insert(Aimbot.FOVSegments, line)
+    end
 end
 
 local function updateDrawings()
-    if Aimbot.FOVring then
-        Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+    local center = workspace.CurrentCamera.ViewportSize / 2
+    local radius = Aimbot.Settings.FOV
+    local numSegments = #Aimbot.FOVSegments
+    
+    for i = 1, numSegments do
+        local angle1 = (i - 1) * (2 * math.pi / numSegments)
+        local angle2 = i * (2 * math.pi / numSegments)
+        
+        local startPos = Vector2.new(
+            center.X + radius * math.cos(angle1),
+            center.Y + radius * math.sin(angle1)
+        )
+        
+        local endPos = Vector2.new(
+            center.X + radius * math.cos(angle2),
+            center.Y + radius * math.sin(angle2)
+        )
+        
+        if Aimbot.FOVSegments[i] then
+            Aimbot.FOVSegments[i].From = startPos
+            Aimbot.FOVSegments[i].To = endPos
+        end
     end
 end
 
@@ -107,15 +155,23 @@ local function mainLoop()
     updateDrawings()
     Aimbot.Target = getClosestPlayerInFOV()
 
-if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
+    if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
         lookAt(Aimbot.Target.Character[Aimbot.Settings.AimPart].Position)
         
         local part = Aimbot.Target.Character[Aimbot.Settings.AimPart]
         local ePos = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
         local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
-        Aimbot.FOVring.Transparency = calculateTransparency(distance)
+        local transparency = calculateTransparency(distance)
+        
+        -- 更新所有线段的透明度
+        for _, segment in ipairs(Aimbot.FOVSegments) do
+            segment.Transparency = transparency
+        end
     else
-        Aimbot.FOVring.Transparency = Aimbot.Settings.MaxTransparency
+        -- 重置所有线段的透明度
+        for _, segment in ipairs(Aimbot.FOVSegments) do
+            segment.Transparency = Aimbot.Settings.MaxTransparency
+        end
     end
 end
 
@@ -138,10 +194,13 @@ function Aimbot:Disable()
     end
     self.Connections = {}
     
-    if self.FOVring then
-        self.FOVring:Remove()
-        self.FOVring = nil
+    -- 移除所有线段
+    for _, segment in ipairs(self.FOVSegments) do
+        if segment then
+            segment:Remove()
+        end
     end
+    self.FOVSegments = {}
     
     self.Enabled = false
     self.Target = nil
@@ -155,8 +214,9 @@ function Aimbot:Configure(settings)
         end
     end
     
-    if self.FOVring then
-        self.FOVring.Radius = self.Settings.FOV
+    -- 重新初始化绘图以应用新的FOV设置
+    if self.Enabled then
+        initDrawings()
     end
 end
 
