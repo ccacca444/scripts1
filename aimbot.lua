@@ -1,4 +1,4 @@
--- 使用替代FOV圆圈方案的Aimbot脚本
+-- 使用完全闭合FOV圆圈的Aimbot脚本
 local Aimbot = {
     Enabled = false,
     Settings = {
@@ -12,10 +12,10 @@ local Aimbot = {
     Connections = {},
     Target = nil,
     FOVGui = nil,
-    FOVSegments = {}
+    FOVCircle = nil
 }
 
-local function createAlternativeFOV()
+local function createFOVCircle()
     local player = game.Players.LocalPlayer
     local camera = workspace.CurrentCamera
     
@@ -26,82 +26,45 @@ local function createAlternativeFOV()
     screenGui.ResetOnSpawn = false
     screenGui.Enabled = Aimbot.Enabled
     
-    -- 创建多个线段来模拟圆形
-    local segments = 36  -- 线段数量
-    local radius = Aimbot.Settings.FOV
-    local center = camera.ViewportSize / 2
+    -- 创建圆形Frame
+    local circle = Instance.new("Frame")
+    circle.Name = "FOVCircle"
+    circle.Size = UDim2.new(0, Aimbot.Settings.FOV * 2, 0, Aimbot.Settings.FOV * 2)
+    circle.Position = UDim2.new(0.5, -Aimbot.Settings.FOV, 0.5, -Aimbot.Settings.FOV) -- 屏幕中央
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.BackgroundTransparency = 1  -- 完全透明背景
+    circle.BorderSizePixel = 2         -- 边框粗细
+    circle.BorderColor3 = Color3.fromRGB(255, 0, 0)  -- 红色边框
+    circle.Visible = Aimbot.Enabled
+    circle.Parent = screenGui
     
-    for i = 1, segments do
-        local angle1 = (i / segments) * math.pi * 2
-        local angle2 = ((i + 1) / segments) * math.pi * 2
-        
-        local startPos = center + Vector2.new(
-            math.cos(angle1) * radius,
-            math.sin(angle1) * radius
-        )
-        
-        local endPos = center + Vector2.new(
-            math.cos(angle2) * radius,
-            math.sin(angle2) * radius
-        )
-        
-        -- 计算线段长度和角度
-        local segmentLength = (endPos - startPos).Magnitude
-        local segmentAngle = math.atan2(endPos.Y - startPos.Y, endPos.X - startPos.X)
-        
-        local line = Instance.new("Frame")
-        line.Size = UDim2.new(0, segmentLength, 0, 2)
-        line.Position = UDim2.new(0, startPos.X, 0, startPos.Y)
-        line.AnchorPoint = Vector2.new(0, 0.5)
-        line.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        line.BorderSizePixel = 0
-        line.Rotation = math.deg(segmentAngle)
-        line.Visible = Aimbot.Enabled
-        line.Parent = screenGui
-        
-        table.insert(Aimbot.FOVSegments, line)
-    end
+    -- 使用UICorner创建圆形
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)  -- 完全圆形
+    corner.Parent = circle
     
     Aimbot.FOVGui = screenGui
+    Aimbot.FOVCircle = circle
     return screenGui
 end
 
-local function updateAlternativeFOV()
+local function updateFOVCircle()
     if not Aimbot.FOVGui or not Aimbot.FOVGui.Parent then
-        createAlternativeFOV()
+        createFOVCircle()
         return
     end
     
-    local camera = workspace.CurrentCamera
-    local center = camera.ViewportSize / 2
-    local radius = Aimbot.Settings.FOV
+    if not Aimbot.FOVCircle then
+        return
+    end
     
     Aimbot.FOVGui.Enabled = Aimbot.Enabled
+    Aimbot.FOVCircle.Visible = Aimbot.Enabled
     
-    for i, line in ipairs(Aimbot.FOVSegments) do
-        local segments = #Aimbot.FOVSegments
-        local angle1 = (i / segments) * math.pi * 2
-        local angle2 = ((i + 1) / segments) * math.pi * 2
-        
-        local startPos = center + Vector2.new(
-            math.cos(angle1) * radius,
-            math.sin(angle1) * radius
-        )
-        
-        local endPos = center + Vector2.new(
-            math.cos(angle2) * radius,
-            math.sin(angle2) * radius
-        )
-        
-        -- 计算线段长度和角度
-        local segmentLength = (endPos - startPos).Magnitude
-        local segmentAngle = math.atan2(endPos.Y - startPos.Y, endPos.X - startPos.X)
-        
-        line.Size = UDim2.new(0, segmentLength, 0, 2)
-        line.Position = UDim2.new(0, startPos.X, 0, startPos.Y)
-        line.Rotation = math.deg(segmentAngle)
-        line.Visible = Aimbot.Enabled
-    end
+    -- 更新圆圈大小（保持屏幕中央）
+    local diameter = Aimbot.Settings.FOV * 2
+    Aimbot.FOVCircle.Size = UDim2.new(0, diameter, 0, diameter)
+    Aimbot.FOVCircle.Position = UDim2.new(0.5, -Aimbot.Settings.FOV, 0.5, -Aimbot.Settings.FOV)
 end
 
 local function cleanupFOV()
@@ -109,7 +72,7 @@ local function cleanupFOV()
         Aimbot.FOVGui:Destroy()
         Aimbot.FOVGui = nil
     end
-    Aimbot.FOVSegments = {}
+    Aimbot.FOVCircle = nil
 end
 
 local function lookAt(target)
@@ -184,10 +147,9 @@ local function getClosestPlayerInFOV()
 end
 
 local function updateFOVColor(transparency)
-    for _, line in ipairs(Aimbot.FOVSegments) do
-        local color = Color3.fromRGB(255, 0, 0)
-        line.BackgroundColor3 = color
-        line.BackgroundTransparency = transparency
+    if Aimbot.FOVCircle then
+        Aimbot.FOVCircle.BorderColor3 = Color3.fromRGB(255, 0, 0)
+        Aimbot.FOVCircle.BorderSizePixel = 2
     end
 end
 
@@ -200,7 +162,7 @@ local function mainLoop()
     end
     
     -- 更新FOV圆圈
-    updateAlternativeFOV()
+    updateFOVCircle()
     
     Aimbot.Target = getClosestPlayerInFOV()
 
@@ -219,8 +181,8 @@ end
 function Aimbot:Init()
     if self.Enabled then return end
     
-    -- 创建替代FOV圆圈
-    createAlternativeFOV()
+    -- 创建FOV圆圈
+    createFOVCircle()
     
     table.insert(self.Connections, game:GetService("RunService").RenderStepped:Connect(mainLoop))
     
@@ -252,8 +214,8 @@ function Aimbot:Configure(settings)
     end
     
     -- 更新FOV大小
-    if self.FOVGui then
-        updateAlternativeFOV()
+    if self.FOVCircle then
+        updateFOVCircle()
     end
 end
 
