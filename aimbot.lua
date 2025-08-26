@@ -23,14 +23,18 @@ local function initDrawings()
     Aimbot.FOVring.Filled = false
     Aimbot.FOVring.Radius = Aimbot.Settings.FOV
     Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+    Aimbot.FOVring.Transparency = 1  -- 初始设置为完全不透明
 end
 
 local function updateDrawings()
     if Aimbot.FOVring then
+        Aimbot.FOVring.Visible = Aimbot.Enabled  
         Aimbot.FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
+        Aimbot.FOVring.Radius = Aimbot.Settings.FOV  
     end
 end
 
+-- 添加缺失的 lookAt 函数
 local function lookAt(target)
     if not Aimbot.Enabled then return end
     local lookVector = (target - workspace.CurrentCamera.CFrame.Position).unit
@@ -39,7 +43,8 @@ local function lookAt(target)
 end
 
 local function calculateTransparency(distance)
-    return (1 - (distance / Aimbot.Settings.FOV)) * Aimbot.Settings.MaxTransparency
+    local transparency = (1 - (distance / Aimbot.Settings.FOV)) * Aimbot.Settings.MaxTransparency
+    return math.clamp(transparency, 0.1, 1)
 end
 
 local function isPlayerAlive(player)
@@ -102,12 +107,17 @@ local function getClosestPlayerInFOV()
 end
 
 local function mainLoop()
-    if not Aimbot.Enabled then return end
+    if not Aimbot.Enabled then 
+        if Aimbot.FOVring then
+            Aimbot.FOVring.Visible = false
+        end
+        return 
+    end
     
     updateDrawings()
     Aimbot.Target = getClosestPlayerInFOV()
 
-if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
+    if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimPart) then
         lookAt(Aimbot.Target.Character[Aimbot.Settings.AimPart].Position)
         
         local part = Aimbot.Target.Character[Aimbot.Settings.AimPart]
@@ -115,7 +125,8 @@ if Aimbot.Target and Aimbot.Target.Character:FindFirstChild(Aimbot.Settings.AimP
         local distance = (Vector2.new(ePos.x, ePos.y) - (workspace.CurrentCamera.ViewportSize / 2)).Magnitude
         Aimbot.FOVring.Transparency = calculateTransparency(distance)
     else
-        Aimbot.FOVring.Transparency = Aimbot.Settings.MaxTransparency
+        -- 没有目标时设置为完全不透明而不是MaxTransparency
+        Aimbot.FOVring.Transparency = 1
     end
 end
 
