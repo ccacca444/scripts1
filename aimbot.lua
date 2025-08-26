@@ -25,7 +25,7 @@ local function initDrawings()
     
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
-    local numSegments = 42 
+    local numSegments = 60 
     
     for i = 1, numSegments do
         local overlap = 0.1 
@@ -44,7 +44,7 @@ local function initDrawings()
         
         local line = Drawing.new("Line")
         line.Visible = true
-        line.Thickness = 5
+        line.Thickness = 7
         line.Color = Color3.fromRGB(255, 0, 0)
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
