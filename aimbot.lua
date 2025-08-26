@@ -25,7 +25,7 @@ local function initDrawings()
     
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
-    local numSegments = 60 
+    local numSegments = 80 
     
     for i = 1, numSegments do
         local overlap = 0.1 
