@@ -1142,7 +1142,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "更新了三把警长枪的透视(buxx,JS5a,Dual)",
+    Name = "更新:aimbot线段红圈",
     Callback = function()
         print("什么都没发生")
      end
