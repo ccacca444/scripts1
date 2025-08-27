@@ -1106,7 +1106,7 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
-            -- 使用pcall避免Rayfield误报
+            
             pcall(function()
                 disableAimbot()
 
@@ -1116,10 +1116,10 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
                     aimbotScript:Init()
                     aimbotEnabled = true
                     
-                    -- 在这里获取配置
+                    
                     local currentConfig = aimbotScript:GetPOVConfig()
                     
-                    -- 更新所有UI元素的值
+                    
                     ColorPicker:Set(currentConfig.Color)
                     ThicknessSlider:Set(currentConfig.Thickness)
                     SegmentsSlider:Set(currentConfig.Segments)
@@ -1243,7 +1243,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "更新:aimbot线段红圈",
+    Name = "更新:aimbot DIY",
     Callback = function()
         print("什么都没发生")
      end
