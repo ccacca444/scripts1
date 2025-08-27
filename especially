@@ -1123,6 +1123,87 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     })
 end)
 --bug print
+local currentConfig = Aimbot:GetPOVConfig()
+
+local ColorPicker = Tab:CreateColorPicker({
+    Name = "POV颜色",
+    Color = currentConfig.Color,
+    Callback = function(Color)
+        local config = Aimbot:GetPOVConfig()
+        config.Color = Color
+        Aimbot:SetPOVConfig(config)
+    end
+})
+
+-- 线条粗细滑块
+local ThicknessSlider = Tab:CreateSlider({
+    Name = "线条粗细",
+    Range = {1, 15},
+    Increment = 1,
+    Suffix = "px",
+    CurrentValue = currentConfig.Thickness,
+    Callback = function(Value)
+        local config = Aimbot:GetPOVConfig()
+        config.Thickness = Value
+        Aimbot:SetPOVConfig(config)
+    end
+})
+
+-- 线段数量滑块
+local SegmentsSlider = Tab:CreateSlider({
+    Name = "线段数量",
+    Range = {12, 100},
+    Increment = 1,
+    Suffix = "段",
+    CurrentValue = currentConfig.Segments,
+    Callback = function(Value)
+        local config = Aimbot:GetPOVConfig()
+        config.Segments = Value
+        Aimbot:SetPOVConfig(config)
+    end
+})
+
+-- 重叠度滑块
+local OverlapSlider = Tab:CreateSlider({
+    Name = "重叠度",
+    Range = {0, 0.3},
+    Increment = 0.01,
+    Suffix = "弧度",
+    CurrentValue = currentConfig.Overlap,
+    Callback = function(Value)
+        local config = Aimbot:GetPOVConfig()
+        config.Overlap = Value
+        Aimbot:SetPOVConfig(config)
+    end
+})
+
+-- FOV大小滑块
+local FOVSlider = Tab:CreateSlider({
+    Name = "FOV大小",
+    Range = {10, 200},
+    Increment = 1,
+    Suffix = "像素",
+    CurrentValue = currentConfig.FOV,
+    Callback = function(Value)
+        local config = Aimbot:GetPOVConfig()
+        config.FOV = Value
+        Aimbot:SetPOVConfig(config)
+    end
+})
+
+-- 透明度滑块
+local TransparencySlider = Tab:CreateSlider({
+    Name = "透明度",
+    Range = {0, 1},
+    Increment = 0.1,
+    Suffix = "",
+    CurrentValue = currentConfig.Transparency,
+    Callback = function(Value)
+        local config = Aimbot:GetPOVConfig()
+        config.Transparency = Value
+        Aimbot:SetPOVConfig(config)
+    end
+})
 
 local ButtonDisableAimbotSuccess, ButtonDisableAimbot = pcall(function()
     return Tab:CreateButton({
