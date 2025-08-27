@@ -1,87 +1,104 @@
--- 血债血偿 by CCA - Vega UI 版本
--- 适配自原Rayfield脚本
--- 专门为那些不适配UI的注入器使用
+-- Xeno UI 适配版本 - 保留原功能
+-- 所有更新请移到提交
 
-local Vega = loadstring(game:HttpGet("https://raw.githubusercontent.com/vega-ui/vega/main/src.lua"))()
-local VegaUI = Vega:new({
-  Name = "血债血偿 by CCA",
-  Size = UDim2.new(0, 500, 0, 400),
-  Position = UDim2.new(0.5, -250, 0.5, -200),
-  Theme = "Dark"
+-- Xeno UI 初始化
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/1f0t3/xeno-ui/main/main.lua"))()
+local Window = Library:CreateWindow("血债 byCCA", "by cca")
+
+-- Create the tab
+local Tab = Window:CreateTab("Players")
+
+local Button = Tab:CreateButton({
+    Name = "视角锁定(请勿点击多次)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
+        Library:Notify("视角锁定", "已加载", 3)
+    end,
 })
 
--- 创建主窗口
-local MainWindow = VegaUI:Window({
-  Name = "血债血偿 by CCA"
-})
-
--- Players Tab
-local PlayersTab = MainWindow:Tab({
-  Name = "玩家功能"
-})
-
--- 视角锁定按钮
-PlayersTab:Button({
-  Name = "视角锁定(请勿点击多次)",
-  Callback = function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
-    VegaUI:Notification({
-      Title = "视角锁定",
-      Content = "已加载",
-      Duration = 3
-    })
-  end
-})
-
--- ESP 相关变量
-local espEnabled = false
-local stopEspLoop = false
-local espPlayerAddedConnection = nil
-local espCharacterAddedConnections = {}
-local rolesLockedByDistance = false
-local lockedDistanceRoles = {}
-local playersMatchingHints = {}
-local hintTextConnection = nil
-local firstVigilanteTracker = {}
-
--- 武器定义
+--杀手
 local killerWeapons = {
-    ["CharcoalSteel JS-22"] = true, ["Hammer n Bullet"] = true, ["Pretty Pink RR-LCP"] = true,
-    ["JS2-BondsDerringy"] = true, ["JTS-225"] = true, ["JTS-225 Monochrome"] = true,
-    ["JTS-225 poly"] = true, ["JTS-225 Party cannon"] = true, ["GILDED"] = true,
-    ["Kamatov"] = true, ["JS2-Derringy"] = true, ["JS-22"] = true, ["NGO"] = true,
-    ["Throwing Dagger"] = true, ["SoundMaker"] = true, ["SoundMakerSlower"] = true,
-    ["RR-LightCompactPistolS"] = true, ["J9-Mereta"] = true, ["RY's GG-17"] = true,
-    ["RR-LCP"] = true, ["JS1 Competitor"] = true, ["AT's KAR15"] = true,
-    ["VK's ANKM"] = true, ["Clothed Sawn-off"] = true, ["Sawn-off"] = true,
-    ["Clothed Rosen-Obrez"] = true, ["Rosen-Obrez"] = true, ["GraySteel K1911"] = true,
-    ["DarkSteel K1911"] = true, ["SilverSteel K1911"] = true, ["K1911"] = true,
-    ["ZZ-90"] = true, ["SKORPION"] = true, ["Mares Leg"] = true,
-    ["RR-LightCompactPistol"] = true, ["RR-LightCompactPistolS"] = true,
-    ["KamatovS"] = true, ["Throwing Tomahawk"] = true, ["Throwing Kunai"] = true,
-    ["ChromeSlide Turqoise RR-LCP"] = true, ["JS-1 CYCLOPS"] = true,
-    ["THUMPA"] = true, ["LUT-E 'KRUS'"] = true
+    ["CharcoalSteel JS-22"] = true,
+    ["Hammer n Bullet"] = true,
+    ["Pretty Pink RR-LCP"] = true,
+    ["JS2-BondsDerringy"] = true,
+    ["JTS-225"] = true,
+    ["JTS-225 Monochrome"] = true,
+    ["JTS-225 poly"] = true,
+    ["JTS-225 Party cannon"] = true,
+    ["GILDED"] = true,
+    ["Kamatov"] = true,
+    ["JS2-Derringy"] = true,
+    ["JS-22"] = true,
+    ["NGO"] = true,
+    ["Throwing Dagger"] = true,
+    ["SoundMaker"] = true,
+    ["SoundMakerSlower"] = true,
+    ["RR-LightCompactPistolS"] = true,
+    ["J9-Mereta"] = true,
+    ["RY's GG-17"] = true,
+    ["RR-LCP"] = true,
+    ["JS1 Competitor"] = true,
+    ["AT's KAR15"] = true,
+    ["VK's ANKM"] = true,
+    ["Clothed Sawn-off"] = true,
+    ["Sawn-off"] = true,
+    ["Clothed Rosen-Obrez"] = true,
+    ["Rosen-Obrez"] = true,
+    ["GraySteel K1911"] = true,
+    ["DarkSteel K1911"] = true,
+    ["SilverSteel K1911"] = true,
+    ["K1911"] = true,
+    ["ZZ-90"] = true,
+    ["SKORPION"] = true,
+    ["Mares Leg"] = true,
+    ["RR-LightCompactPistol"] = true,
+    ["RR-LightCompactPistolS"] = true,
+    ["KamatovS"] = true,
+    ["Throwing Tomahawk"] = true,
+    ["Throwing Kunai"] = true,
+    ["ChromeSlide Turqoise RR-LCP"] = true,
+    ["JS-1 CYCLOPS"] = true,
+    ["THUMPA"] = true,
+    ["LUT-E 'KRUS'"] = true
 }
 
+--警长
 local vigilanteWeapons = {
-    ["Beagle"] = true, ["IZVEKH-412"] = true, ["SilverSteel RR-Snubby"] = true,
-    ["RR-Snubby"] = true, ["ZKZ-Obrez"] = true, ["Clothed ZKZ-Obrez"] = true,
-    ["Buxxberg-COMPACT"] = true, ["pretty pink Buxxberg-COMPACT"] = true,
-    ["JS-5A-OBREZ"] = true, ["GG-17"] = true, ["J9-M"] = true, ["J9-Meretta"] = true,
-    ["Pretty Pink GG-17"] = true, ["GG-17 TAN"] = true, ["GG-17 GILDED"] = true,
-    ["RR-Snubby GILDED"] = true, ["HWISSH-226"] = true, ["Dual Elites"] = true,
-    ["ZKZ-Obrez10"] = true
+    ["Beagle"] = true,
+    ["IZVEKH-412"] = true,
+    ["SilverSteel RR-Snubby"] = true,
+    ["RR-Snubby"] = true,
+    ["ZKZ-Obrez"] = true,
+    ["Clothed ZKZ-Obrez"] = true,
+    ["Buxxberg-COMPACT"] = true,
+    ["pretty pink Buxxberg-COMPACT"] = true,
+    ["JS-5A-OBREZ"] = true,
+    ["GG-17"] = true,
+    ["J9-M"] = true,
+    ["J9-Meretta"] = true,
+    ["Pretty Pink GG-17"] = true,
+    ["GG-17 TAN"] = true,
+    ["GG-17 GILDED"] = true,
+    ["RR-Snubby GILDED"] = true,
+    ["HWISSH-226"] = true,
+    ["Dual Elites"] = true,
+    ["ZKZ-Obrez10"] = true,
 }
 
+-- Define Special Killer weapons
 local specialKillerWeapons = {
-    ["RY's GG-17"] = true, ["AT's KAR15"] = true, ["VK's ANKM"] = true
+    ["RY's GG-17"] = true,
+    ["AT's KAR15"] = true,
+    ["VK's ANKM"] = true,
 }
 
+-- Define a combined list of all relevant weapons
 local allRoleWeapons = {}
 for name, _ in pairs(killerWeapons) do allRoleWeapons[name] = true end
 for name, _ in pairs(vigilanteWeapons) do allRoleWeapons[name] = true end
 
--- 角色颜色定义
+-- Define Role Colors and Labels
 local killerColor = Color3.fromRGB(255, 0, 0)
 local killerLabel = "杀手"
 local vigilanteColor = Color3.fromRGB(0, 255, 255)
@@ -93,14 +110,31 @@ local hintMatchLabel = "目标"
 local vigilanteHintColor = Color3.fromRGB(128, 0, 128)
 local vigilanteHintLabel = "警官 + 目标"
 
+-- Define the distance threshold
 local distanceThreshold = 30
+
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
 local NPCSFolder = Workspace:WaitForChild("NPCSFolder")
 local BloodFolder = Workspace:WaitForChild("BloodFolder")
 
--- ESP 功能函数
+-- State variables for controlling ESP
+local espEnabled = false
+local stopEspLoop = false
+local espPlayerAddedConnection = nil
+local espCharacterAddedConnections = {}
+
+-- State variables for the distance locking rule
+local rolesLockedByDistance = false
+local lockedDistanceRoles = {}
+
+-- State variables for the Hint Matching rule
+local playersMatchingHints = {}
+local hintTextConnection = nil
+local firstVigilanteTracker = {}
+
+-- Add floating name tag
 local function addNameTag(character, text, color)
     local head = character:FindFirstChild("Head")
     if not head then return end
@@ -127,6 +161,7 @@ local function addNameTag(character, text, color)
     label.Parent = bb
 end
 
+-- Clear previous overlays
 local function clearOldStuff(character)
     if not character then return end
 
@@ -142,6 +177,7 @@ local function clearOldStuff(character)
     end
 end
 
+-- Tag player by role
 local function tagPlayer(player, roleColor, labelText)
     if not player.Character then return end
     clearOldStuff(player.Character)
@@ -161,10 +197,10 @@ local function tagPlayer(player, roleColor, labelText)
     end
 end
 
+-- Helper function to collect a player's tools
 local function collectPlayerTools(player)
     local tools = {}
     local backpack = player:FindFirstChildOfClass("Backpack")
-    
     if backpack then
         for _, tool in ipairs(backpack:GetChildren()) do
             if tool:IsA("Tool") then
@@ -172,7 +208,6 @@ local function collectPlayerTools(player)
             end
         end
     end
-    
     if player.Character then
         for _, tool in ipairs(player.Character:GetChildren()) do
             if tool:IsA("Tool") then
@@ -195,19 +230,26 @@ local function collectPlayerTools(player)
     return tools
 end
 
+-- Helper function to get standard role based on weapons
 local function getStandardRoleFromWeapons(toolsByName)
-    local role, color, label = nil, nil, nil
+    local role = nil
+    local color = nil
+    local label = nil
 
     for weaponName, _ in pairs(killerWeapons) do
         if not specialKillerWeapons[weaponName] and toolsByName[weaponName] then
-             role, color, label = "Killer", killerColor, killerLabel
+             role = "Killer"
+             color = killerColor
+             label = killerLabel
              return role, color, label
         end
     end
 
     for weaponName, _ in pairs(vigilanteWeapons) do
         if toolsByName[weaponName] then
-            role, color, label = "Vigilante", vigilanteColor, vigilanteLabel
+            role = "Vigilante"
+            color = vigilanteColor
+            label = vigilanteLabel
             return role, color, label
         end
     end
@@ -215,8 +257,10 @@ local function getStandardRoleFromWeapons(toolsByName)
     return nil, nil, nil
 end
 
+-- Function to parse a single string of hint content
 local function parseSingleHint(hintContent)
-    local hintType, hintValue = "invalid", nil
+    local hintType = "invalid"
+    local hintValue = nil
     local cleanedContent = hintContent:match("^%s*(.-)%s*$") or ""
 
     if string.len(cleanedContent) == 0 then
@@ -225,7 +269,8 @@ local function parseSingleHint(hintContent)
 
     local taskMatch = cleanedContent:match("^Is often seen%s*(.*)$")
     if taskMatch then
-        hintType, hintValue = "task", taskMatch:match("^%s*(.-)%s*$")
+        hintType = "task"
+        hintValue = taskMatch:match("^%s*(.-)%s*$")
         return hintType, hintValue
     end
 
@@ -233,18 +278,21 @@ local function parseSingleHint(hintContent)
     if traitBracketMatch then
         local cleanClue = traitBracketMatch:gsub("[%[%]]", ""):match("^%s*(.-)%s*$") or ""
         if string.len(cleanClue) > 0 and cleanClue:lower() ~= "assigned task" and cleanClue:lower() ~= "seen" then
-            hintType, hintValue = "trait", cleanClue
+            hintType = "trait"
+            hintValue = cleanClue
             return hintType, hintValue
         end
     end
 
     if hintType == "invalid" then
-        hintType, hintValue = "trait", cleanedContent
+        hintType = "trait"
+        hintValue = cleanedContent
     end
 
     return hintType, hintValue
 end
 
+-- Function to update the playersMatchingHints table
 local function updateMatchingHintPlayers()
     playersMatchingHints = {}
 
@@ -369,9 +417,9 @@ local function updateMatchingHintPlayers()
     end
 end
 
+-- Function to connect the hint text changed signal
 local function connectHintTextSignal()
      if not espEnabled then return end
-     
      if hintTextConnection then
          hintTextConnection:Disconnect()
          hintTextConnection = nil
@@ -394,6 +442,7 @@ local function connectHintTextSignal()
      updateMatchingHintPlayers()
 end
 
+-- Detect and apply roles
 local function detectRoles()
     if not espEnabled then return end
 
@@ -426,16 +475,13 @@ local function detectRoles()
                      specialKillerDetected = true
                      playersWithSpecialWeapons[player] = true
                  end
-                 
                  if allRoleWeapons[name] then
                       hasAnyRoleWeapon = true
                  end
-                 
                  if vigilanteWeapons[name] then
                      hasVigilanteWeapon = true
                      playersWithVigilanteWeapons[player] = true
                  end
-                 
                  if killerWeapons[name] then
                      hasKillerWeapon = true
                  end
@@ -448,7 +494,7 @@ local function detectRoles()
                   end
              end
 
-             if hasKillerWeapon then
+              if hasKillerWeapon then
                   killerGunHoldersCount = killerGunHoldersCount + 1
                   singleKillerGunHolderCandidate = player
              end
@@ -480,7 +526,6 @@ local function detectRoles()
     if not newHighestPriorityKillerDetected then
          local allValidTargetsHaveGun = true
          local otherPlayersWithCharCount = 0
-         
          for player, _ in pairs(playersWithValidCharacters) do
              if player ~= lp then otherPlayersWithCharCount = otherPlayersWithCharCount + 1 end
              if playersWithoutAnyGun[player] then
@@ -488,7 +533,6 @@ local function detectRoles()
                  break
              end
          end
-         
          if allValidTargetsHaveGun and otherPlayersWithCharCount > 0 then
              everyoneHasGunConditionMet = true
          end
@@ -500,7 +544,6 @@ local function detectRoles()
                   break
               end
          end
-         
          if not anyValidTargetHasGun and otherPlayersWithCharCount > 0 then
               noOneHasGunConditionMet = true
          end
@@ -509,6 +552,7 @@ local function detectRoles()
     if not newHighestPriorityKillerDetected and not specialKillerDetected and everyoneHasGunConditionMet and not rolesLockedByDistance then
          rolesLockedByDistance = true
          lockedDistanceRoles = {}
+         print("Blood Debt Role Detector: Distance Lock ACTIVATED.")
 
          local localHRP = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
 
@@ -533,6 +577,7 @@ local function detectRoles()
     if not newHighestPriorityKillerDetected and not specialKillerDetected and noOneHasGunConditionMet and rolesLockedByDistance then
          rolesLockedByDistance = false
          lockedDistanceRoles = {}
+         print("Blood Debt Role Detector: Distance Lock DEACTIVATED.")
     end
 
     updateMatchingHintPlayers()
@@ -575,10 +620,12 @@ local function detectRoles()
     end
 end
 
+-- Function to disable ESP
 local function disableEsp()
     if espEnabled then
         espEnabled = false
         stopEspLoop = true
+        print("Blood Debt Role Detector: ESP Disabled")
 
         rolesLockedByDistance = false
         lockedDistanceRoles = {}
@@ -607,22 +654,14 @@ local function disableEsp()
                 clearOldStuff(player.Character)
             end
         end
-         
-        VegaUI:Notification({
-            Title = "ESP Disabled",
-            Content = "Role detection has been turned off.",
-            Duration = 3
-        })
+         Library:Notify("ESP Disabled", "Role detection has been turned off.", 3)
     end
 end
 
+-- Function to teleport to dropped gun
 local function tpToDroppedGun()
     if not BloodFolder then
-        VegaUI:Notification({
-            Title = "Error",
-            Content = "BloodFolder not found in Workspace.",
-            Duration = 5
-        })
+         Library:Notify("Error", "BloodFolder not found in Workspace.", 5)
         return
     end
 
@@ -635,38 +674,32 @@ local function tpToDroppedGun()
                  foundGun = true
                  break
             else
-                 VegaUI:Notification({
-                    Title = "Error",
-                    Content = "Cannot teleport: Your character is not ready.",
-                    Duration = 5
-                })
+                 Library:Notify("Error", "Cannot teleport: Your character is not ready.", 5)
                 return
             end
         end
     end
 
     if not foundGun then
-        VegaUI:Notification({
-            Title = "No Gun Found",
-            Content = "There are no valid guns in the BloodFolder.",
-            Duration = 5
-        })
+        Library:Notify("No Gun Found", "There are no valid guns in the BloodFolder.", 5)
     end
 end
 
--- ESP 启用按钮
-PlayersTab:Button({
+-- Create Enable ESP button
+Tab:CreateButton({
     Name = "启动 ESP",
     Callback = function()
         if not espEnabled then
             espEnabled = true
             stopEspLoop = false
+            print("Blood Debt Role Detector: ESP Enabled")
 
             task.spawn(function()
                 while espEnabled and not stopEspLoop do
                     task.wait(0.5)
                     detectRoles()
                 end
+                 print("Blood Debt Role Detector: ESP Detection loop stopped.")
             end)
 
             espPlayerAddedConnection = game.Players.PlayerAdded:Connect(function(player)
@@ -683,7 +716,7 @@ PlayersTab:Button({
                  end
             end)
 
-            game.Players.PlayerRemoving:Connect(function(player)
+             game.Players.PlayerRemoving:Connect(function(player)
                 if espCharacterAddedConnections[player] then
                     if typeof(espCharacterAddedConnections[player]) == "RBXScriptConnection" then
                         espCharacterAddedConnections[player]:Disconnect()
@@ -696,37 +729,25 @@ PlayersTab:Button({
             connectHintTextSignal()
             detectRoles()
 
-            VegaUI:Notification({
-                Title = "ESP Enabled",
-                Content = "Role detection has been turned on.",
-                Duration = 3
-            })
+            Library:Notify("ESP Enabled", "Role detection has been turned on.", 3)
         else
-            VegaUI:Notification({
-                Title = "ESP Already On",
-                Content = "Role detection is already running.",
-                Duration = 3
-            })
+            Library:Notify("ESP Already On", "Role detection is already running.", 3)
         end
     end
 })
 
--- ESP 禁用按钮
-PlayersTab:Button({
+-- Create Disable ESP button
+Tab:CreateButton({
     Name = "禁用 ESP",
-    Callback = disableEsp
+    Callback = function()
+        disableEsp()
+    end
 })
 
--- 传送到武器按钮
-PlayersTab:Button({
-    Name = "传送到武器",
-    Callback = tpToDroppedGun
-})
+Library:Notify("ESP Script Initialized", "Attempted to create UI elements. Check output for details.", 5)
 
 -- Aimbot Tab
-local AimbotTab = MainWindow:Tab({
-    Name = "瞄准功能"
-})
+local AimbotTab = Window:CreateTab("Aimbot")
 
 local aimbotScript = nil
 local aimbotEnabled = false
@@ -738,78 +759,74 @@ local function disableAimbot()
         end
 
         aimbotEnabled = false
-        VegaUI:Notification({
-            Title = "Aimbot 禁用",
-            Content = "aimbot 禁用",
-            Duration = 3
-        })
+
+        if fovCircle then
+            fovCircle:Destroy()
+            fovCircle = nil
+        end
+
+        if targetHighlight then
+            targetHighlight:Destroy()
+            targetHighlight = nil
+        end
+
+        print("Aimbot己禁用")
+        Library:Notify("Aimbot 禁用", "aimbot 禁用", 3)
     end
 end
 
--- Aimbot 加载按钮
-AimbotTab:Button({
+AimbotTab:CreateButton({
     Name = "加载aimbot", 
     Callback = function()
-        disableAimbot()
-        aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
-        
-        if aimbotScript and aimbotScript.Init then
-            aimbotScript:Init()
-            aimbotEnabled = true
-            VegaUI:Notification({
-                Title = "Aimbot 已加载",
-                Content = "Aimbot 功能已启用",
-                Duration = 3
-            })
+        pcall(function()
+            disableAimbot()
+            aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
+            
+            if aimbotScript and aimbotScript.Init then
+                aimbotScript:Init()
+                aimbotEnabled = true
+                
+                Library:Notify("Aimbot Loaded", "Aimbot has been loaded successfully", 3)
+            end
+        end)
+    end
+})
+
+AimbotTab:CreateToggle({
+    Name = "检查墙",
+    Callback = function(Value)
+        if aimbotScript and aimbotScript.SetWallHack then
+            aimbotScript:SetWallHack(Value)
+            Library:Notify("检查墙", Value and "已开启" or "已关闭", 3)
         end
     end
 })
 
--- Aimbot 禁用按钮
-AimbotTab:Button({
+AimbotTab:CreateButton({
     Name = "停止aimbot",  
     Callback = disableAimbot  
 })
 
--- 关于 Tab
-local AboutTab = MainWindow:Tab({
-    Name = "关于与更新"
-})
+-- About Tab
+local AboutTab = Window:CreateTab("关于与更新")
 
-AboutTab:Button({
+AboutTab:CreateButton({
     Name = "作者QQ1516721807",
     Callback = function()
-        print("作者QQ: 1516721807")
-    end
+        print("什么都没发生")
+     end
 })
 
-AboutTab:Button({
-    Name = "此脚本会以缓慢速度更新因为他是主脚本的一个分支",
+AboutTab:CreateButton({
+    Name = "子脚本为主脚本的分支更新很慢",
     Callback = function()
-        VegaUI:Notification({
-            Title = "更新信息",
-            Content = "Aimbot",
-            Duration = 3
-        })
-    end
+        print("什么都没发生")
+     end
 })
 
-AboutTab:Button({
+AboutTab:CreateButton({
     Name = "禁止倒卖 倒卖死妈 警惕各种圈钱诈骗",
     Callback = function()
-        VegaUI:Notification({
-            Title = "警告",
-            Content = "禁止倒卖脚本，谨防诈骗",
-            Duration = 5
-        })
-    end
+        print("什么都没发生")
+     end
 })
-
-VegaUI:Notification({
-    Title = "脚本加载完成",
-    Content = "血债血偿 by CCA 已成功加载",
-    Duration = 5
-})
-
--- 初始化 Vega UI
-VegaUI:Init()
