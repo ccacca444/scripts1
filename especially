@@ -1106,7 +1106,7 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
-            pcall(function()
+        pcall(function()
             disableAimbot()
             aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
             
