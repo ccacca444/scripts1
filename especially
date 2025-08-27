@@ -1106,33 +1106,46 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
+            disableAimbot()
+            aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
             
-            pcall(function()
-                disableAimbot()
-
-                aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
-
-                if aimbotScript and aimbotScript.Init then
-                    aimbotScript:Init()
-                    aimbotEnabled = true
-                    
-                    
-                    local currentConfig = aimbotScript:GetPOVConfig()
-                    
-                    
-                    ColorPicker:Set(currentConfig.Color)
-                    ThicknessSlider:Set(currentConfig.Thickness)
-                    SegmentsSlider:Set(currentConfig.Segments)
-                    OverlapSlider:Set(currentConfig.Overlap)
-                    FOVSlider:Set(currentConfig.FOV)
-                    TransparencySlider:Set(currentConfig.Transparency)
-                    
-                    print("Aimbot已加载")
-                end
-            end)
+            if aimbotScript and aimbotScript.Init then
+                aimbotScript:Init()
+                aimbotEnabled = true
+                
+                
+                local currentConfig = aimbotScript:GetPOVConfig()
+                ColorPicker:Set(currentConfig.Color)
+                ThicknessSlider:Set(currentConfig.Thickness)
+                SegmentsSlider:Set(currentConfig.Segments)
+                OverlapSlider:Set(currentConfig.Overlap)
+                FOVSlider:Set(currentConfig.FOV)
+                TransparencySlider:Set(currentConfig.Transparency)
+                
+                
+                WallHackToggle:Set(aimbotScript:GetWallHack())
+                
+                print("Aimbot已加载")
+            end
         end
     })
 end)
+
+local WallHackToggle = Tab:CreateToggle({
+    Name = "检查墙",
+    CurrentValue = false,
+    Callback = function(Value)
+        if aimbotScript and aimbotScript.SetWallHack then
+            aimbotScript:SetWallHack(Value)
+            Rayfield:Notify({
+                Title = "检查墙",
+                Content = Value and "已开启" or "已关闭",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end
+})
 
 local ColorPicker = Tab:CreateColorPicker({
     Name = "POV颜色",
