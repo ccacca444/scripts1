@@ -1,5 +1,5 @@
 -- Xeno UI 适配版本 - 保留原功能
--- 所有更新请移到提交
+-- 这是专门为不适配UI注入器制作
 
 -- Xeno UI 初始化
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/1f0t3/xeno-ui/main/lib.lua"))()
@@ -8,10 +8,6 @@ local Window = Library:CreateWindow({Name = "血债 byCCA", Description = "by cc
 -- Create the tab
 local Tab = Window:AddTab("Players")
 
-Tab:AddButton("视角锁定(请勿点击多次)", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
-    Library:SendNotification("视角锁定", "已加载", 3)
-end)
 
 --杀手
 local killerWeapons = {
