@@ -754,7 +754,8 @@ end
 AimbotTab:AddButton("加载aimbot", function()
     pcall(function()
         disableAimbot()
-        aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
+        aimbotScript = 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbotXenoUI.lua"))()
         
         if aimbotScript and aimbotScript.Init then
             aimbotScript:Init()
