@@ -739,41 +739,40 @@ local AimbotTab = Window:AddTab("Aimbot")
 local aimbotScript = nil
 local aimbotEnabled = false
 
-local function disableAimbot()
-    if aimbotEnabled then
-        if aimbotScript and aimbotScript.Disable then
-            aimbotScript:Disable()
-        end
-
-        aimbotEnabled = false
-
-        Library:SendNotification("Aimbot 禁用", "aimbot 禁用", 3)
-    end
-end
-
 AimbotTab:AddButton("加载aimbot", function()
     pcall(function()
         disableAimbot()
-        aimbotScript = 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbotXenoUI.lua"))()
         
-        if aimbotScript and aimbotScript.Init then
-            aimbotScript:Init()
+        -- 加载并执行Aimbot脚本
+        aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbotXenoUI.lua", true))()
+        
+        if aimbotScript then
+            -- 手动在主脚本的Aimbot标签页中添加控制选项
+            AimbotTab:AddButton("启用 Aimbot", function()
+                if aimbotScript.Init then
+                    aimbotScript:Init()
+                    Library:SendNotification("Aimbot", "Aimbot 已启用", 3)
+                end
+            end)
+            
+            AimbotTab:AddButton("禁用 Aimbot", function()
+                if aimbotScript.Disable then
+                    aimbotScript:Disable()
+                    Library:SendNotification("Aimbot", "Aimbot 已禁用", 3)
+                end
+            end)
+            
+            AimbotTab:AddToggle("WallHack", function(Value)
+                if aimbotScript.SetWallHack then
+                    aimbotScript:SetWallHack(Value)
+                    Library:SendNotification("WallHack", Value and "已开启" or "已关闭", 3)
+                end
+            end, false)
+            
             aimbotEnabled = true
-            Library:SendNotification("Aimbot Loaded", "Aimbot has been loaded successfully", 3)
+            Library:SendNotification("成功", "Aimbot 加载完成", 3)
         end
     end)
-end)
-
-AimbotTab:AddToggle("检查墙", function(Value)
-    if aimbotScript and aimbotScript.SetWallHack then
-        aimbotScript:SetWallHack(Value)
-        Library:SendNotification("检查墙", Value and "已开启" or "已关闭", 3)
-    end
-end, false)
-
-AimbotTab:AddButton("停止aimbot", function()
-    disableAimbot()
 end)
 
 -- About Tab
