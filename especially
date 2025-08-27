@@ -1106,28 +1106,29 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
-        pcall(function()
-            disableAimbot()
-            aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
-            
-            if aimbotScript and aimbotScript.Init then
-                aimbotScript:Init()
-                aimbotEnabled = true
+            pcall(function()
+                disableAimbot()
+                aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
                 
-                
-                local currentConfig = aimbotScript:GetPOVConfig()
-                ColorPicker:Set(currentConfig.Color)
-                ThicknessSlider:Set(currentConfig.Thickness)
-                SegmentsSlider:Set(currentConfig.Segments)
-                OverlapSlider:Set(currentConfig.Overlap)
-                FOVSlider:Set(currentConfig.FOV)
-                TransparencySlider:Set(currentConfig.Transparency)
-                
-                
-                WallHackToggle:Set(aimbotScript:GetWallHack())
-                
-                print("Aimbot已加载")
-            end
+                if aimbotScript and aimbotScript.Init then
+                    aimbotScript:Init()
+                    aimbotEnabled = true
+                    
+                    
+                    local currentConfig = aimbotScript:GetPOVConfig()
+                    
+                    
+                    if ColorPicker then ColorPicker:Set(currentConfig.Color) end
+                    if ThicknessSlider then ThicknessSlider:Set(currentConfig.Thickness) end
+                    if SegmentsSlider then SegmentsSlider:Set(currentConfig.Segments) end
+                    if OverlapSlider then OverlapSlider:Set(currentConfig.Overlap) end
+                    if FOVSlider then FOVSlider:Set(currentConfig.FOV) end
+                    if TransparencySlider then TransparencySlider:Set(currentConfig.Transparency) end
+                    if WallHackToggle then WallHackToggle:Set(aimbotScript:GetWallHack()) end
+                    
+                    print("Aimbot已加载")
+                end
+            end)
         end
     })
 end)
