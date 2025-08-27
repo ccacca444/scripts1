@@ -733,59 +733,60 @@ end)
 
 Library:SendNotification("ESP Script Initialized", "Attempted to create UI elements. Check output for details.", 5)
 
--- Aimbot Tab
 local AimbotTab = Window:AddTab("Aimbot")
 
 local aimbotScript = nil
 local aimbotEnabled = false
+local uiElementsAdded = false  -- 标记UI元素是否已添加
+
+-- 先定义 disableAimbot 函数
+local function disableAimbot()
+    if aimbotEnabled and aimbotScript and aimbotScript.Disable then
+        aimbotScript:Disable()
+        aimbotEnabled = false
+        Library:SendNotification("Aimbot", "Aimbot 已禁用", 3)
+    end
+end
 
 AimbotTab:AddButton("加载aimbot", function()
     pcall(function()
         disableAimbot()
-        
+
         -- 加载并执行Aimbot脚本
-        aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbotXenoUI.lua", true))()
-        
-        if aimbotScript then
-            -- 手动在主脚本的Aimbot标签页中添加控制选项
-            AimbotTab:AddButton("启用 Aimbot", function()
-                if aimbotScript.Init then
-                    aimbotScript:Init()
-                    Library:SendNotification("Aimbot", "Aimbot 已启用", 3)
-                end
-            end)
+        local success, result = pcall(function()
+            return loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbotXenoUI.lua", true))()
+        end)
+
+        if success and result then
+            aimbotScript = result
             
-            AimbotTab:AddButton("禁用 Aimbot", function()
-                if aimbotScript.Disable then
-                    aimbotScript:Disable()
-                    Library:SendNotification("Aimbot", "Aimbot 已禁用", 3)
-                end
-            end)
-            
-            AimbotTab:AddToggle("WallHack", function(Value)
-                if aimbotScript.SetWallHack then
-                    aimbotScript:SetWallHack(Value)
-                    Library:SendNotification("WallHack", Value and "已开启" or "已关闭", 3)
-                end
-            end, false)
-            
-            aimbotEnabled = true
+            -- 只在第一次加载时添加UI元素
+            if not uiElementsAdded then
+                AimbotTab:AddButton("启用 Aimbot", function()
+                    if aimbotScript and aimbotScript.Init then
+                        aimbotScript:Init()
+                        aimbotEnabled = true
+                        Library:SendNotification("Aimbot", "Aimbot 已启用", 3)
+                    end
+                end)
+
+                AimbotTab:AddButton("禁用 Aimbot", function()
+                    disableAimbot()
+                end)
+
+                AimbotTab:AddToggle("WallHack", function(Value)
+                    if aimbotScript and aimbotScript.SetWallHack then
+                        aimbotScript:SetWallHack(Value)
+                        Library:SendNotification("WallHack", Value and "已开启" or "已关闭", 3)
+                    end
+                end, false)
+                
+                uiElementsAdded = true
+            end
+
             Library:SendNotification("成功", "Aimbot 加载完成", 3)
+        else
+            Library:SendNotification("错误", "Aimbot 加载失败: " .. tostring(result), 5)
         end
     end)
-end)
-
--- About Tab
-local AboutTab = Window:AddTab("关于与更新")
-
-AboutTab:AddButton("作者QQ1516721807", function()
-    print("什么都没发生")
-end)
-
-AboutTab:AddButton("更新:aimbot DIY", function()
-    print("什么都没发生")
-end)
-
-AboutTab:AddButton("禁止倒卖 倒卖死妈 警惕各种圈钱诈骗", function()
-    print("什么都没发生")
 end)
