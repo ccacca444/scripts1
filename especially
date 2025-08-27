@@ -1118,6 +1118,7 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
                     local currentConfig = aimbotScript:GetPOVConfig()
                     
                     
+                    task.wait(0.1)
                     if ColorPicker then ColorPicker:Set(currentConfig.Color) end
                     if ThicknessSlider then ThicknessSlider:Set(currentConfig.Thickness) end
                     if SegmentsSlider then SegmentsSlider:Set(currentConfig.Segments) end
