@@ -1107,10 +1107,8 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
         Name = "加载aimbot", 
         Callback = function()
 
-            disableAimbot()
-      
             pcall(function()
-            disableAimbot()
+                disableAimbot()
 
             aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
 
