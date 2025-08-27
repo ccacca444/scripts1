@@ -2,19 +2,16 @@
 -- 所有更新请移到提交
 
 -- Xeno UI 初始化
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/1f0t3/xeno-ui/main/main.lua"))()
-local Window = Library:CreateWindow("血债 byCCA", "by cca")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/1f0t3/xeno-ui/main/lib.lua"))()
+local Window = Library:CreateWindow({Name = "血债 byCCA", Description = "by cca"})
 
 -- Create the tab
-local Tab = Window:CreateTab("Players")
+local Tab = Window:AddTab("Players")
 
-local Button = Tab:CreateButton({
-    Name = "视角锁定(请勿点击多次)",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
-        Library:Notify("视角锁定", "已加载", 3)
-    end,
-})
+Tab:AddButton("视角锁定(请勿点击多次)", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/locking.lua"))()
+    Library:SendNotification("视角锁定", "已加载", 3)
+end)
 
 --杀手
 local killerWeapons = {
@@ -552,7 +549,6 @@ local function detectRoles()
     if not newHighestPriorityKillerDetected and not specialKillerDetected and everyoneHasGunConditionMet and not rolesLockedByDistance then
          rolesLockedByDistance = true
          lockedDistanceRoles = {}
-         print("Blood Debt Role Detector: Distance Lock ACTIVATED.")
 
          local localHRP = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
 
@@ -577,7 +573,6 @@ local function detectRoles()
     if not newHighestPriorityKillerDetected and not specialKillerDetected and noOneHasGunConditionMet and rolesLockedByDistance then
          rolesLockedByDistance = false
          lockedDistanceRoles = {}
-         print("Blood Debt Role Detector: Distance Lock DEACTIVATED.")
     end
 
     updateMatchingHintPlayers()
@@ -625,7 +620,6 @@ local function disableEsp()
     if espEnabled then
         espEnabled = false
         stopEspLoop = true
-        print("Blood Debt Role Detector: ESP Disabled")
 
         rolesLockedByDistance = false
         lockedDistanceRoles = {}
@@ -654,14 +648,14 @@ local function disableEsp()
                 clearOldStuff(player.Character)
             end
         end
-         Library:Notify("ESP Disabled", "Role detection has been turned off.", 3)
+         Library:SendNotification("ESP Disabled", "Role detection has been turned off.", 3)
     end
 end
 
 -- Function to teleport to dropped gun
 local function tpToDroppedGun()
     if not BloodFolder then
-         Library:Notify("Error", "BloodFolder not found in Workspace.", 5)
+         Library:SendNotification("Error", "BloodFolder not found in Workspace.", 5)
         return
     end
 
@@ -674,80 +668,77 @@ local function tpToDroppedGun()
                  foundGun = true
                  break
             else
-                 Library:Notify("Error", "Cannot teleport: Your character is not ready.", 5)
+                 Library:SendNotification("Error", "Cannot teleport: Your character is not ready.", 5)
                 return
             end
         end
     end
 
     if not foundGun then
-        Library:Notify("No Gun Found", "There are no valid guns in the BloodFolder.", 5)
+        Library:SendNotification("No Gun Found", "There are no valid guns in the BloodFolder.", 5)
     end
 end
 
 -- Create Enable ESP button
-Tab:CreateButton({
-    Name = "启动 ESP",
-    Callback = function()
-        if not espEnabled then
-            espEnabled = true
-            stopEspLoop = false
-            print("Blood Debt Role Detector: ESP Enabled")
+Tab:AddButton("启动 ESP", function()
+    if not espEnabled then
+        espEnabled = true
+        stopEspLoop = false
 
-            task.spawn(function()
-                while espEnabled and not stopEspLoop do
-                    task.wait(0.5)
-                    detectRoles()
+        task.spawn(function()
+            while espEnabled and not stopEspLoop do
+                task.wait(0.5)
+                detectRoles()
+            end
+        end)
+
+        espPlayerAddedConnection = game.Players.PlayerAdded:Connect(function(player)
+             local charAddedConn = player.CharacterAdded:Connect(function(character)
+                 task.wait(0.1)
+                 connectHintTextSignal()
+                 detectRoles()
+             end)
+             espCharacterAddedConnections[player] = charAddedConn
+
+             if player.Character then
+                  task.wait(0.1)
+                  detectRoles()
+             end
+        end)
+
+         game.Players.PlayerRemoving:Connect(function(player)
+            if espCharacterAddedConnections[player] then
+                if typeof(espCharacterAddedConnections[player]) == "RBXScriptConnection" then
+                    espCharacterAddedConnections[player]:Disconnect()
                 end
-                 print("Blood Debt Role Detector: ESP Detection loop stopped.")
-            end)
+                espCharacterAddedConnections[player] = nil
+            end
+            clearOldStuff(player.Character)
+        end)
 
-            espPlayerAddedConnection = game.Players.PlayerAdded:Connect(function(player)
-                 local charAddedConn = player.CharacterAdded:Connect(function(character)
-                     task.wait(0.1)
-                     connectHintTextSignal()
-                     detectRoles()
-                 end)
-                 espCharacterAddedConnections[player] = charAddedConn
+        connectHintTextSignal()
+        detectRoles()
 
-                 if player.Character then
-                      task.wait(0.1)
-                      detectRoles()
-                 end
-            end)
-
-             game.Players.PlayerRemoving:Connect(function(player)
-                if espCharacterAddedConnections[player] then
-                    if typeof(espCharacterAddedConnections[player]) == "RBXScriptConnection" then
-                        espCharacterAddedConnections[player]:Disconnect()
-                    end
-                    espCharacterAddedConnections[player] = nil
-                end
-                clearOldStuff(player.Character)
-            end)
-
-            connectHintTextSignal()
-            detectRoles()
-
-            Library:Notify("ESP Enabled", "Role detection has been turned on.", 3)
-        else
-            Library:Notify("ESP Already On", "Role detection is already running.", 3)
-        end
+        Library:SendNotification("ESP Enabled", "Role detection has been turned on.", 3)
+    else
+        Library:SendNotification("ESP Already On", "Role detection is already running.", 3)
     end
-})
+end)
 
 -- Create Disable ESP button
-Tab:CreateButton({
-    Name = "禁用 ESP",
-    Callback = function()
-        disableEsp()
-    end
-})
+Tab:AddButton("禁用 ESP", function()
+    disableEsp()
+end)
 
-Library:Notify("ESP Script Initialized", "Attempted to create UI elements. Check output for details.", 5)
+-- Create Teleport to Gun button
+Tab:AddButton("传送到枪", function()
+    tpToDroppedGun()
+end)
+
+Library:SendNotification("ESP Script Initialized", "Attempted to create UI elements. Check output for details.", 5)
 
 -- Aimbot Tab
-local AimbotTab = Window:CreateTab("Aimbot")
+local AimbotTab = Window:AddTab("Aimbot")
 
 local aimbotScript = nil
 local aimbotEnabled = false
@@ -760,73 +751,45 @@ local function disableAimbot()
 
         aimbotEnabled = false
 
-        if fovCircle then
-            fovCircle:Destroy()
-            fovCircle = nil
-        end
-
-        if targetHighlight then
-            targetHighlight:Destroy()
-            targetHighlight = nil
-        end
-
-        print("Aimbot己禁用")
-        Library:Notify("Aimbot 禁用", "aimbot 禁用", 3)
+        Library:SendNotification("Aimbot 禁用", "aimbot 禁用", 3)
     end
 end
 
-AimbotTab:CreateButton({
-    Name = "加载aimbot", 
-    Callback = function()
-        pcall(function()
-            disableAimbot()
-            aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
-            
-            if aimbotScript and aimbotScript.Init then
-                aimbotScript:Init()
-                aimbotEnabled = true
-                
-                Library:Notify("Aimbot Loaded", "Aimbot has been loaded successfully", 3)
-            end
-        end)
-    end
-})
-
-AimbotTab:CreateToggle({
-    Name = "检查墙",
-    Callback = function(Value)
-        if aimbotScript and aimbotScript.SetWallHack then
-            aimbotScript:SetWallHack(Value)
-            Library:Notify("检查墙", Value and "已开启" or "已关闭", 3)
+AimbotTab:AddButton("加载aimbot", function()
+    pcall(function()
+        disableAimbot()
+        aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
+        
+        if aimbotScript and aimbotScript.Init then
+            aimbotScript:Init()
+            aimbotEnabled = true
+            Library:SendNotification("Aimbot Loaded", "Aimbot has been loaded successfully", 3)
         end
-    end
-})
+    end)
+end)
 
-AimbotTab:CreateButton({
-    Name = "停止aimbot",  
-    Callback = disableAimbot  
-})
+AimbotTab:AddToggle("检查墙", function(Value)
+    if aimbotScript and aimbotScript.SetWallHack then
+        aimbotScript:SetWallHack(Value)
+        Library:SendNotification("检查墙", Value and "已开启" or "已关闭", 3)
+    end
+end, false)
+
+AimbotTab:AddButton("停止aimbot", function()
+    disableAimbot()
+end)
 
 -- About Tab
-local AboutTab = Window:CreateTab("关于与更新")
+local AboutTab = Window:AddTab("关于与更新")
 
-AboutTab:CreateButton({
-    Name = "作者QQ1516721807",
-    Callback = function()
-        print("什么都没发生")
-     end
-})
+AboutTab:AddButton("作者QQ1516721807", function()
+    print("什么都没发生")
+end)
 
-AboutTab:CreateButton({
-    Name = "子脚本为主脚本的分支更新很慢",
-    Callback = function()
-        print("什么都没发生")
-     end
-})
+AboutTab:AddButton("更新:aimbot DIY", function()
+    print("什么都没发生")
+end)
 
-AboutTab:CreateButton({
-    Name = "禁止倒卖 倒卖死妈 警惕各种圈钱诈骗",
-    Callback = function()
-        print("什么都没发生")
-     end
-})
+AboutTab:AddButton("禁止倒卖 倒卖死妈 警惕各种圈钱诈骗", function()
+    print("什么都没发生")
+end)
