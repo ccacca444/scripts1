@@ -1072,25 +1072,25 @@ local aimbotEnabled = false
 
 local function disableAimbot()
     if aimbotEnabled then
-       
+
         if aimbotScript and aimbotScript.Disable then
             aimbotScript:Disable()
         end
-        
-        
+
+
         aimbotEnabled = false
-        
-        
+
+
         if fovCircle then
             fovCircle:Destroy()
             fovCircle = nil
         end
-        
+
         if targetHighlight then
             targetHighlight:Destroy()
             targetHighlight = nil
         end
-        
+
         print("Aimbot己禁用")
         Rayfield:Notify({
             Title = "Aimbot 禁用",
@@ -1106,102 +1106,122 @@ local ButtonLoadAimbotSuccess, ButtonLoadAimbot = pcall(function()
     return Tab:CreateButton({
         Name = "加载aimbot", 
         Callback = function()
-            
+
             disableAimbot()
-            
-            
+
             aimbotScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/ccacca444/scripts1/main/aimbot.lua"))()
-            
-            
+
             if aimbotScript and aimbotScript.Init then
                 aimbotScript:Init()
+                aimbotEnabled = true
+                
+                
+                local currentConfig = aimbotScript:GetPOVConfig()
+                
+                
+                ColorPicker:Set(currentConfig.Color)
+                ThicknessSlider:Set(currentConfig.Thickness)
+                SegmentsSlider:Set(currentConfig.Segments)
+                OverlapSlider:Set(currentConfig.Overlap)
+                FOVSlider:Set(currentConfig.FOV)
+                TransparencySlider:Set(currentConfig.Transparency)
+                
+                print("Aimbot已加载")
             end
-            
-            aimbotEnabled = true
-            print("Aimbot已加载")
         end
     })
 end)
---bug print
-local currentConfig = Aimbot:GetPOVConfig()
+
 
 local ColorPicker = Tab:CreateColorPicker({
     Name = "POV颜色",
-    Color = currentConfig.Color,
+    Color = Color3.fromRGB(255, 0, 0),
     Callback = function(Color)
-        local config = Aimbot:GetPOVConfig()
-        config.Color = Color
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.Color = Color
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
--- 线条粗细滑块
+
 local ThicknessSlider = Tab:CreateSlider({
     Name = "线条粗细",
     Range = {1, 15},
     Increment = 1,
     Suffix = "px",
-    CurrentValue = currentConfig.Thickness,
+    CurrentValue = 4,
     Callback = function(Value)
-        local config = Aimbot:GetPOVConfig()
-        config.Thickness = Value
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.Thickness = Value
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
--- 线段数量滑块
+
 local SegmentsSlider = Tab:CreateSlider({
     Name = "线段数量",
     Range = {12, 100},
     Increment = 1,
     Suffix = "段",
-    CurrentValue = currentConfig.Segments,
+    CurrentValue = 36,
     Callback = function(Value)
-        local config = Aimbot:GetPOVConfig()
-        config.Segments = Value
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.Segments = Value
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
--- 重叠度滑块
+
 local OverlapSlider = Tab:CreateSlider({
     Name = "重叠度",
     Range = {0, 0.3},
     Increment = 0.01,
     Suffix = "弧度",
-    CurrentValue = currentConfig.Overlap,
+    CurrentValue = 0.05,
     Callback = function(Value)
-        local config = Aimbot:GetPOVConfig()
-        config.Overlap = Value
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.Overlap = Value
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
--- FOV大小滑块
+
 local FOVSlider = Tab:CreateSlider({
     Name = "FOV大小",
     Range = {10, 200},
     Increment = 1,
     Suffix = "像素",
-    CurrentValue = currentConfig.FOV,
+    CurrentValue = 30,
     Callback = function(Value)
-        local config = Aimbot:GetPOVConfig()
-        config.FOV = Value
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.FOV = Value
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
--- 透明度滑块
+
 local TransparencySlider = Tab:CreateSlider({
     Name = "透明度",
     Range = {0, 1},
     Increment = 0.1,
     Suffix = "",
-    CurrentValue = currentConfig.Transparency,
+    CurrentValue = 0.3,
     Callback = function(Value)
-        local config = Aimbot:GetPOVConfig()
-        config.Transparency = Value
-        Aimbot:SetPOVConfig(config)
+        if aimbotScript and aimbotScript.SetPOVConfig then
+            local config = aimbotScript:GetPOVConfig() or {}
+            config.Transparency = Value
+            aimbotScript:SetPOVConfig(config)
+        end
     end
 })
 
@@ -1212,8 +1232,7 @@ local ButtonDisableAimbotSuccess, ButtonDisableAimbot = pcall(function()
     })
 end)
 
-local Tab = Window:CreateTab("关于与更新",
-"rewind")
+local Tab = Window:CreateTab("关于与更新", "rewind")
 
 local Button = Tab:CreateButton({
     Name = "作者QQ1516721807",
