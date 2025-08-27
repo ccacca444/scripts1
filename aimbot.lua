@@ -220,4 +220,31 @@ function Aimbot:Configure(settings)
     end
 end
 
-return Aimbot
+function Aimbot:GetPOVConfig()
+    return {
+        FOV = self.Settings.FOV,
+        Color = self.Settings.POVColor,
+        Thickness = self.Settings.POVThickness,
+        Segments = self.Settings.POVSegments,
+        Overlap = self.Settings.POVOverlap,
+        Transparency = self.Settings.MaxTransparency
+    }
+end
+
+
+function Aimbot:SetPOVConfig(config)
+    if config.FOV then self.Settings.FOV = config.FOV end
+    if config.Color then self.Settings.POVColor = config.Color end
+    if config.Thickness then self.Settings.POVThickness = config.Thickness end
+    if config.Segments then self.Settings.POVSegments = config.Segments end
+    if config.Overlap then self.Settings.POVOverlap = config.Overlap end
+    if config.Transparency then self.Settings.MaxTransparency = config.Transparency end
+    
+    
+    if self.Enabled then
+        initDrawings()
+    end
+    return true
+end
+
+return Aimbot 
