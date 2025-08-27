@@ -6,6 +6,7 @@ local Aimbot = {
         MaxTransparency = 1,
         TeamCheck = false,
         WallCheck = true,
+        WallHack = false,
         AimPart = "Head",
         
         POVColor = Color3.fromRGB(255, 0, 0),
@@ -100,6 +101,11 @@ local function isPlayerAlive(player)
 end
 
 local function isPlayerVisibleThroughWalls(player, trg_part)
+    
+    if Aimbot.Settings.WallHack then
+        return true
+    end
+    
     if not Aimbot.Settings.WallCheck then
         return true
     end
@@ -249,6 +255,16 @@ function Aimbot:SetPOVConfig(config)
         initDrawings()
     end
     return true
+end
+
+function Aimbot:SetWallHack(enabled)
+    self.Settings.WallHack = enabled
+    print("你妈死了没有: " .. (enabled and "死了" or "没死"))
+    return true
+end
+
+function Aimbot:GetWallHack()
+    return self.Settings.WallHack
 end
 
 return Aimbot 
