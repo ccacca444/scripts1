@@ -6,13 +6,13 @@ local Aimbot = {
         MaxTransparency = 1,
         TeamCheck = false,
         WallCheck = true,
-        AimPart = "Head"
+        AimPart = "Head",
+        
+        POVColor = Color3.fromRGB(255, 0, 0),
+        POVThickness = 4,
+        POVSegments = 36,
+        POVOverlap = 0.05
     },
-    POVColor = Color3.fromRGB(255, 0, 0),
-    POVThickness = 4,
-    POVSegments = 36,
-    POVOverlap = 0.05
-},
     Connections = {},
     Target = nil,
     FOVSegments = {} 
@@ -21,39 +21,29 @@ local Aimbot = {
 local function initDrawings()
     
     for _, segment in ipairs(Aimbot.FOVSegments) do
-        if segment then
-            segment:Remove()
-        end
-    end
-    Aimbot.FOVSegments = {}
-    
-    
-    local function initDrawings()
-   
-    for _, segment in ipairs(Aimbot.FOVSegments) do
         if segment then segment:Remove() end
     end
     Aimbot.FOVSegments = {}
-    
+
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
     local numSegments = Aimbot.Settings.POVSegments  
     local overlap = Aimbot.Settings.POVOverlap       
-    
+
     for i = 1, numSegments do
         local angle1 = (i - 1) * (2 * math.pi / numSegments) - overlap
         local angle2 = i * (2 * math.pi / numSegments) + overlap
-        
+
         local startPos = Vector2.new(
             center.X + radius * math.cos(angle1),
             center.Y + radius * math.sin(angle1)
         )
-        
+
         local endPos = Vector2.new(
             center.X + radius * math.cos(angle2),
             center.Y + radius * math.sin(angle2)
         )
-        
+
         local line = Drawing.new("Line")
         line.Visible = true
         line.Thickness = Aimbot.Settings.POVThickness  
@@ -61,7 +51,7 @@ local function initDrawings()
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
         line.To = endPos
-        
+
         table.insert(Aimbot.FOVSegments, line)
     end
 end
@@ -70,27 +60,28 @@ local function updateDrawings()
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
     local numSegments = #Aimbot.FOVSegments
-    local overlap = 0.1
+    local overlap = Aimbot.Settings.POVOverlap  
     for i = 1, numSegments do
         local angle1 = (i - 1) * (2 * math.pi / numSegments) - overlap
         local angle2 = i * (2 * math.pi / numSegments) + overlap
-        
+
         local startPos = Vector2.new(
             center.X + radius * math.cos(angle1),
             center.Y + radius * math.sin(angle1)
         )
-        
+
         local endPos = Vector2.new(
             center.X + radius * math.cos(angle2),
             center.Y + radius * math.sin(angle2)
         )
-        
+
         if Aimbot.FOVSegments[i] then
             Aimbot.FOVSegments[i].From = startPos
             Aimbot.FOVSegments[i].To = endPos
         end
     end
 end
+
 
 local function lookAt(target)
     if not Aimbot.Enabled then return end
