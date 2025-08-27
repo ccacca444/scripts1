@@ -8,6 +8,11 @@ local Aimbot = {
         WallCheck = true,
         AimPart = "Head"
     },
+    POVColor = Color3.fromRGB(255, 0, 0),
+    POVThickness = 4,
+    POVSegments = 36,
+    POVOverlap = 0.05
+},
     Connections = {},
     Target = nil,
     FOVSegments = {} 
@@ -23,10 +28,18 @@ local function initDrawings()
     Aimbot.FOVSegments = {}
     
     
+    local function initDrawings()
+   
+    for _, segment in ipairs(Aimbot.FOVSegments) do
+        if segment then segment:Remove() end
+    end
+    Aimbot.FOVSegments = {}
+    
     local center = workspace.CurrentCamera.ViewportSize / 2
     local radius = Aimbot.Settings.FOV
-    local numSegments = 80 
-    local overlap = 0.1
+    local numSegments = Aimbot.Settings.POVSegments  
+    local overlap = Aimbot.Settings.POVOverlap       
+    
     for i = 1, numSegments do
         local angle1 = (i - 1) * (2 * math.pi / numSegments) - overlap
         local angle2 = i * (2 * math.pi / numSegments) + overlap
@@ -43,8 +56,8 @@ local function initDrawings()
         
         local line = Drawing.new("Line")
         line.Visible = true
-        line.Thickness = 15
-        line.Color = Color3.fromRGB(255, 0, 0)
+        line.Thickness = Aimbot.Settings.POVThickness  
+        line.Color = Aimbot.Settings.POVColor          
         line.Transparency = Aimbot.Settings.MaxTransparency
         line.From = startPos
         line.To = endPos
