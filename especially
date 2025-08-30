@@ -1259,7 +1259,7 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-    Name = "更新:aimbot DIY",
+    Name = "以后节假日才有更新",
     Callback = function()
         print("什么都没发生")
      end
